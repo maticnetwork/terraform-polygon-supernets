@@ -1,0 +1,43 @@
+---
+clean_deploy_title: devnet01
+# ansible uses _ instead of -, so this is intentional
+current_deploy_inventory: devnet01_edge_polygon_private
+block_gas_limit: 50_000_000
+block_time: 5
+chain_id: 2001
+
+# cat ~/cert/2022-07-05-devnets-generic.key | ansible-vault encrypt_string --stdin-name devnet_default_ssh_key --vault-password password.txt
+# This value should only be needed for manually created devnets.
+vault_pass: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          34393461333161656432353339353030306438336364623163643535306564323865393531653431
+          3861336135386131323935656134633034343039373333350a346331666466313033343965613439
+          33323464303666393065646431623462373239323163636664393735396665623030363761663839
+          3837633330616562320a303533656437366234383536366432386536363961313865383935616337
+          63613139326538623838663035633532313664613239356563313462633165613136303262336431
+          38353364663938383739386238363539303161616633336134636634313466636539643661373931
+          38336537306463613830373862666130333462333838316361633735666564326232373237313435
+          37383532363837316334613638643464326264306430356233353730396432333933343266396638
+          64306232366361616334623033666331373934373334663963646664306332373830363165643865
+          35353864363639623664336230313563386135616537363561323562373363323463346130616337
+          62663436373434393335393666326638386462316161306331613532363330393164643932666235
+          63393432613362623763
+
+ansible_ssh_private_key_file: ~/cert/devnet_private.key
+
+
+# you shouldn't need to change below
+polycli_tag: 0.1.18
+ansible_ssh_common_args: >
+  -o IdentitiesOnly=yes
+  -o StrictHostKeyChecking=no
+  -o ProxyCommand="sh -c \"aws ssm start-session --target %h --document-name AWS-StartSSHSession --parameters 'portNumber=%p'\""
+ansible_user: ubuntu
+ansible_become: true
+ansible_ssh_retries: 5
+clean_deploy_name: "{{ clean_deploy_title }}"
+git_pat_token: "{{ git_token }}"
+polycli_version_tag: "{{ polycli_tag }}"
+
+edge_tag: v0.8.0
+go_tag: 1.19.5.linux-amd64

@@ -1,0 +1,5 @@
+{% for item in hostvars %}
+{% if (hostvars[item].tags.Role == "fullnode") %}
+{{ hostvars[item].private_ip_address }}
+{% endif %}
+{% endfor %}

@@ -1,0 +1,66 @@
+---
+# Bootstrap edge
+- name: Produce edge bootstrap script
+  ansible.builtin.template:
+    src: bootstrap.sh
+    dest: "{{ edge_home_dir }}/init.sh"
+    mode: 0700
+
+- name: Execute bootstrap on the first validator
+  ansible.builtin.command: "{{ edge_home_dir }}/init.sh"
+  when: hostvars[inventory_hostname].tags["Hostname"] == "validator-001"
+
+- name: Copy the bootstrap data to local
+  block:
+    - name: Fetch the bootstrap archive stored on the first validator
+      ansible.builtin.fetch:
+        src: /var/lib/bootstrap/{{ base_dn }}.tar.gz
+        dest: /tmp/{{ base_dn }}.tar.gz
+        flat: true
+      when: hostvars[inventory_hostname].tags["Hostname"] == "validator-001"
+    - name: Create a folder to hold the bootstrap archive
+      ansible.builtin.file:
+        path: "{{ edge_home_dir }}/bootstrap"
+        state: directory
+        owner: "{{ edge_user }}"
+        group: "{{ edge_user }}-group"
+        mode: 0755
+    - name: Move the bootstrap archive to the bootstrap folder
+      ansible.builtin.copy:
+        src: /tmp/{{ base_dn }}.tar.gz
+        dest: "{{ edge_home_dir }}/bootstrap/{{ base_dn }}.tar.gz"
+        owner: "{{ edge_user }}"
+        group: "{{ edge_user }}"
+        mode: 0755
+    - name: Extract bootstrap files
+      ansible.builtin.unarchive:
+        src: "{{ edge_home_dir }}/bootstrap/{{ base_dn }}.tar.gz"
+        dest: "{{ edge_home_dir }}/bootstrap/"
+        remote_src: true
+
+- name: Set up edge validator files (consensus/, libp2p/ and genesis.json)
+  block:
+    - name: Copy consensus directory
+      ansible.builtin.copy:
+        src: "{{ edge_home_dir }}/bootstrap/{{ hostvars[inventory_hostname].tags['Name'] }}/consensus"
+        dest: "{{ edge_home_dir }}"
+        owner: "{{ edge_user }}"
+        group: "{{ edge_user }}"
+        mode: 0755
+        remote_src: true
+    - name: Copy libp2p directory
+      ansible.builtin.copy:
+        src: "{{ edge_home_dir }}/bootstrap/{{ hostvars[inventory_hostname].tags['Name'] }}/libp2p"
+        dest: "{{ edge_home_dir }}"
+        owner: "{{ edge_user }}"
+        group: "{{ edge_user }}"
+        mode: 0755
+        remote_src: true
+    - name: Copy genesis file
+      ansible.builtin.copy:
+        src: "{{ edge_home_dir }}/bootstrap/genesis.json"
+        dest: "{{ edge_home_dir }}/genesis.json"
+        owner: "{{ edge_user }}"
+        group: "{{ edge_user }}"
+        mode: 0644
+        remote_src: true

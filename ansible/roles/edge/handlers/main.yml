@@ -1,0 +1,7 @@
+---
+- name: Restart Edge Service
+  ansible.builtin.systemd:
+    state: restarted
+    name: edge
+    enabled: true
+    daemon_reload: true
