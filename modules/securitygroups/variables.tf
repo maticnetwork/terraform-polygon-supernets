@@ -1,8 +1,3 @@
-locals {
-  all_instances = concat(aws_instance.validator, aws_instance.fullnode, aws_instance.jumpbox, aws_instance.metrics)
-  all_p2p_nodes = concat(aws_instance.validator, aws_instance.fullnode)
-}
-
 variable "jumpbox_count" {
   description = "The number of jump boxes that we're going to deploy"
   type        = number
@@ -27,4 +22,18 @@ variable "network_acl" {
 variable "http_rpc_port" {
   description = "The TCP port that will be used for http rpc"
   type        = number
+}
+
+variable "devnet_id" {
+  type = string
+}
+
+variable "validator_primary_network_interface_ids" {
+  type        = list(string)
+}
+variable "fullnode_primary_network_interface_ids" {
+  type        = list(string)
+}
+variable "jumpbox_primary_network_interface_ids" {
+  type        = list(string)
 }

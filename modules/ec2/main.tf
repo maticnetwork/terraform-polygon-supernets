@@ -18,7 +18,7 @@ resource "aws_key_pair" "devnet" {
 
 resource "aws_network_interface" "validator_private" {
   count     = var.validator_count
-  subnet_id = element(var.private_network_mode ? aws_subnet.devnet_private : aws_subnet.devnet_public, count.index).id
+  subnet_id = element(var.private_network_mode ? var.devnet_private_subnet_ids : var.devnet_public_subnet_ids, count.index)
 
   tags = {
     Name = format("validator-private-%03d.%s", count.index + 1, var.base_dn)
@@ -26,7 +26,7 @@ resource "aws_network_interface" "validator_private" {
 }
 resource "aws_network_interface" "fullnode_private" {
   count     = var.fullnode_count
-  subnet_id = element(var.private_network_mode ? aws_subnet.devnet_private : aws_subnet.devnet_public, count.index).id
+  subnet_id = element(var.private_network_mode ? var.devnet_private_subnet_ids : var.devnet_public_subnet_ids, count.index)
 
   tags = {
     Name = format("fullnode-private-%03d.%s", count.index + 1, var.base_dn)
@@ -38,7 +38,7 @@ resource "aws_instance" "validator" {
   instance_type        = var.base_instance_type
   count                = var.validator_count
   key_name             = aws_key_pair.devnet.key_name
-  iam_instance_profile = aws_iam_instance_profile.ec2_profile.name
+  iam_instance_profile = var.ec2_profile_name
 
   root_block_device {
     delete_on_termination = true
@@ -63,7 +63,7 @@ resource "aws_instance" "fullnode" {
   instance_type        = var.base_instance_type
   count                = var.fullnode_count
   key_name             = aws_key_pair.devnet.key_name
-  iam_instance_profile = aws_iam_instance_profile.ec2_profile.name
+  iam_instance_profile = var.ec2_profile_name
 
   root_block_device {
     delete_on_termination = true
@@ -87,8 +87,8 @@ resource "aws_instance" "jumpbox" {
   instance_type        = var.jumpbox_instance_type
   count                = var.jumpbox_count
   key_name             = aws_key_pair.devnet.key_name
-  subnet_id            = element(aws_subnet.devnet_public, count.index).id
-  iam_instance_profile = aws_iam_instance_profile.ec2_profile.name
+  subnet_id            = element(var.devnet_public_subnet_ids, count.index)
+  iam_instance_profile = var.ec2_profile_name
 
   root_block_device {
     delete_on_termination = true
@@ -100,26 +100,5 @@ resource "aws_instance" "jumpbox" {
     Name     = format("jumpbox-%03d.%s", count.index + 1, var.base_dn)
     Hostname = format("jumpbox-%03d", count.index + 1)
     Role     = "jumpbox"
-  }
-}
-
-resource "aws_instance" "metrics" {
-  ami                  = var.base_ami
-  instance_type        = var.base_instance_type
-  count                = var.metrics_count
-  key_name             = aws_key_pair.devnet.key_name
-  subnet_id            = element(aws_subnet.devnet_public, count.index).id
-  iam_instance_profile = aws_iam_instance_profile.ec2_profile.name
-
-  root_block_device {
-    delete_on_termination = true
-    volume_size           = 30
-    volume_type           = "gp2"
-  }
-
-  tags = {
-    Name     = format("metrics-%03d.%s", count.index + 1, var.base_dn)
-    Hostname = format("metrics-%03d", count.index + 1)
-    Role     = "metrics"
   }
 }

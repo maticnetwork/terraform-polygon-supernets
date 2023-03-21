@@ -1,3 +1,7 @@
+variable "base_dn" {
+  description = "Value of the base domain name to identify the resources"
+  type        = string
+}
 variable "base_instance_type" {
   description = "The type of instance that we're going to use"
   type        = string
@@ -20,16 +24,42 @@ variable "jumpbox_count" {
   description = "The number of jump boxes that we're going to deploy"
   type        = number
 }
-variable "metrics_count" {
-  description = "The number of boxes that can be used local monitoring"
-  type        = number
-}
 variable "private_network_mode" {
   description = "True if vms should bey default run in the private subnets"
   type        = bool
-  default     = true
 }
 variable "base_devnet_key_name" {
   description = "base key pair name to use for devnet"
+  type        = string
+}
+variable "deployment_name" {
+  description = "The unique name for this particular deployment"
+  type        = string
+}
+variable "network_type" {
+  description = "An identifier to indicate what type of network this is"
+  type        = string
+}
+variable "create_ssh_key" {
+  description = "Should a new ssh key be created or should we use the devnet_key_value"
+  type        = bool
+}
+variable "devnet_key_value" {
+  description = "The public key value to use for the ssh key"
+  type        = string
+}
+
+variable "devnet_private_subnet_ids" {
+  type        = list(string)
+}
+variable "devnet_public_subnet_ids" {
+  type        = list(string)
+}
+
+variable "ec2_profile_name" {
+  type = string
+}
+variable "jumpbox_instance_type" {
+  description = "The type of instance that we're going to use for the jumpbox"
   type        = string
 }

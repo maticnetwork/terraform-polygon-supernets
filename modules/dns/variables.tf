@@ -16,7 +16,17 @@ variable "validator_count" {
   description = "The number of validators that we're going to deploy"
   type        = number
 }
-variable "metrics_count" {
-  description = "The number of boxes that can be used local monitoring"
-  type        = number
+
+variable "devnet_id" {
+  type        = string
+}
+
+variable "validator_private_ips" {
+  type = list(string)
+}
+variable "fullnode_private_ips" {
+  type = list(string)
+}
+variable "aws_lb_domain" {
+  type = string
 }

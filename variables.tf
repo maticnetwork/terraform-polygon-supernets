@@ -70,8 +70,44 @@ variable "jumpbox_count" {
   default     = 1
 }
 
-variable "metrics_count" {
-  description = "The number of boxes that can be used local monitoring"
-  type        = number
-  default     = 0
+variable "private_network_mode" {
+  description = "True if vms should bey default run in the private subnets"
+  type        = bool
+  default     = true
+}
+variable "devnet_vpc_block" {
+  description = "The cidr block for our VPC"
+  type        = string
+  default     = "10.10.0.0/16"
+}
+# 10.10.0.0/18
+variable "devnet_public_subnet" {
+  description = "The cidr block for the public subnet in our VPC"
+  type        = list(string)
+  default     = ["10.10.0.0/22", "10.10.4.0/22", "10.10.8.0/22"]
+}
+# 10.10.64.0/18
+variable "devnet_private_subnet" {
+  description = "The cidr block for the private subnet in our VPC"
+  type        = list(string)
+  default     = ["10.10.64.0/22", "10.10.68.0/22", "10.10.72.0/22"]
+}
+variable "jumpbox_ssh_access" {
+  description = "Which CIDRs should be allow to SSH into the jumpbox"
+  type        = list(string)
+}
+variable "network_acl" {
+  description = "Which CIDRs should be allowed to access the explorer and RPC"
+  type        = list(string)
+  default     = ["54.159.156.68/32", "34.192.184.1/32", "0.0.0.0/0"]
+}
+variable "devnet_key_value" {
+  description = "The public key value to use for the ssh key"
+  type        = string
+  default     = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIA513ky/mJ4oKMKX0OFF44NPN9cqiZ5CIyYAa5l8M4Z6 jhilliard@polygon.technology"
+}
+variable "jumpbox_instance_type" {
+  description = "The type of instance that we're going to use for the jumpbox"
+  type        = string
+  default     = "c6a.large"
 }
