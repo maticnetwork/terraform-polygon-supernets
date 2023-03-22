@@ -29,8 +29,7 @@ variable "aws_profile" {
 
 variable "company_name" {
   description = "The name of the company for this particular deployment"
-  type        = number
-  default     = 0
+  type        = string
 }
 variable "create_ssh_key" {
   description = "Should a new ssh key be created or should we use the devnet_key_value"
