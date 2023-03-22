@@ -1,22 +1,19 @@
 <!-- BEGIN_TF_DOCS -->
-<p align="center">
-  <img src="https://raw.githubusercontent.com/0xPolygon/polygon-edge/develop/.github/banner.jpg" alt="Polygon Edge" width="100%">
-</p>
 
-# Polygon Edge AWS Terraform
+# Polygon Supernets AWS Terraform
 
-Polygon Edge is a modular and extensible framework for building Ethereum-compatible blockchain networks.
+Polygon Supernets is Polygon's solution to build and power dedicated app-chains. Supernets are powered by Polygon's cutting-edge EVM technology, industry-leading blockchain tools and premium end-to-end support. 
 
-To find out more about Polygon, visit the [official website](https://polygon.technology/).
+To find out more about Polygon, visit the [official website](https://polygon.technology/polygon-supernets).
 
 ### Documentation 📝
 
-If you'd like to learn more about the Polygon Edge, how it works and how you can use it for your project,
-please check out the **[Polygon Edge Documentation](https://docs.polygon.technology/docs/edge/overview/)**.
+If you'd like to learn more about the Polygon Supernets, how it works and how you can use it for your project,
+please check out the **[Polygon Supernets Documentation](https://docs.polygon.technology/docs/edge/overview/)**.
 
 ## Terraform deployment
 
-This is a fully automated Polygon Edge blockchain infrastructure deployment for AWS cloud provider.
+This is a fully automated Polygon Supernet blockchain infrastructure deployment for AWS cloud provider.
 
 High level overview of the resources that will be deployed:
 * Dedicated VPC
@@ -40,7 +37,7 @@ Two variables that must be provided, before running the deployment:
 
 Only regions that have 4 availability zones are required for this deployment. Each node is deployed in a single AZ.
 
-By placing each node in a single AZ, the whole blockchain cluster is fault-tolerant to a single node (AZ) failure, as Polygon Edge implements IBFT
+By placing each node in a single AZ, the whole blockchain cluster is fault-tolerant to a single node (AZ) failure, as Polygon Supernets implements PolyBFT
 consensus which allows a single node to fail in a 4 validator node cluster.
 
 ### Command line access
