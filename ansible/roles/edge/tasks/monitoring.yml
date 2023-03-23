@@ -1,0 +1,34 @@
+---
+# Set up monitoring for edge
+
+- name: Create DD Open Metrics Config
+  ansible.builtin.template:
+    src: openmetrics.yml
+    dest: /etc/datadog-agent/conf.d/openmetrics.d/conf.yaml
+    mode: 0644
+  notify:
+    - Restart DD Agent
+
+- name: Create a directory monitor for edge
+  ansible.builtin.template:
+    src: directory.yml
+    dest: /etc/datadog-agent/conf.d/directory.d/conf.yaml
+    mode: 0644
+  notify:
+    - Restart DD Agent
+
+- name: Create a process monitor for edge
+  ansible.builtin.template:
+    src: process.yml
+    dest: /etc/datadog-agent/conf.d/process.d/conf.yaml
+    mode: 0644
+  notify:
+    - Restart DD Agent
+
+- name: Create a systemd monitor for edge
+  ansible.builtin.template:
+    src: systemd.yml
+    dest: /etc/datadog-agent/conf.d/systemd.d/conf.yaml
+    mode: 0644
+  notify:
+    - Restart DD Agent

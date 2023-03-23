@@ -1,0 +1,52 @@
+---
+
+- name: Download polycli archive
+  block:
+    - name: Download polycli archive on x86_64 architecture
+      register: polycli_download_results
+      ansible.builtin.get_url:
+        url: https://github.com/maticnetwork/polygon-cli/releases/download/v{{ polycli_tag }}/polycli_{{ polycli_tag }}_linux_amd64.tar.gz
+        dest: /opt # If dest is a directory, the file will always be downloaded (regardless of the force option), but replaced only if the contents changed
+        mode: 0600
+        force: false
+        timeout: 300
+      when: ansible_architecture == "x86_64"
+    - name: Download polycli archive on aarch64 architecture
+      register: polycli_download_results
+      ansible.builtin.get_url:
+        url: https://github.com/maticnetwork/polygon-cli/releases/download/v{{ polycli_tag }}/polycli_{{ polycli_tag }}_linux_arm64.tar.gz
+        dest: /opt
+        mode: 0600
+        force: false
+        timeout: 300
+      when: ansible_architecture == "aarch64"
+
+- name: Extract polycli archive
+  block:
+    - name: Extract polycli archive on x86_64 architecture
+      ansible.builtin.unarchive:
+        src: /opt/polycli_{{ polycli_tag }}_linux_amd64.tar.gz
+        dest: /opt
+        remote_src: true
+      when: ansible_architecture == "x86_64"
+    - name: Extract polycli archive on aarch64 architecture
+      ansible.builtin.unarchive:
+        src: /opt/polycli_{{ polycli_tag }}_linux_arm64.tar.gz
+        dest: /opt
+        remote_src: true
+      when: ansible_architecture == "aarch64"
+
+- name: Create a symbolic link
+  block:
+    - name: Create a symbolic link on x86_64 architecture
+      ansible.builtin.file:
+        src: /opt/polycli_{{ polycli_tag }}_linux_amd64/polycli
+        dest: /usr/local/bin/polycli
+        state: link
+      when: ansible_architecture == "x86_64"
+    - name: Create a symbolic link on aarch64 architecture
+      ansible.builtin.file:
+        src: /opt/polycli_{{ polycli_tag }}_linux_arm64/polycli
+        dest: /usr/local/bin/polycli
+        state: link
+      when: ansible_architecture == "aarch64"

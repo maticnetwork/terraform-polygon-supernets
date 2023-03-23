@@ -1,0 +1,19 @@
+---
+
+- name: Install HAProxy
+  ansible.builtin.apt:
+    pkg:
+      - haproxy
+    state: latest # noqa package-latest
+    update_cache: true
+  when: ansible_distribution == "Ubuntu"
+
+- name: Create HAProxy Config
+  ansible.builtin.template:
+    src: haproxy.cfg
+    dest: /etc/haproxy/haproxy.cfg
+    mode: 0644
+    owner: root
+    group: root
+  notify:
+    - Restart HAProxy

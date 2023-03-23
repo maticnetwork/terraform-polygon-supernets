@@ -1,0 +1,65 @@
+---
+- name: Create deployment_id file
+  block:
+    - name: Check if deployment_id file exists
+      ansible.builtin.stat:
+        path: /etc/polygon-deployment-id
+      register: deployment_id_file
+    - name: Create deployment_id file
+      ansible.builtin.template:
+        src: ./templates/polygon-deployment-id
+        dest: /etc/polygon-deployment-id
+        mode: 0755
+        force: false
+      when: not deployment_id_file.stat.exists
+    - name: "Check wether /etc/polygon-deployment-id contains {{ deployment_name }}"
+      ansible.builtin.command: grep -Fxq "{{ deployment_name }}" /etc/polygon-deployment-id
+      register: checkdeployment
+      check_mode: false
+      ignore_errors: true
+      changed_when: false
+    - name: "Check wether /etc/polygon-deployment-id contains {{ deployment_name }}"
+      ansible.builtin.assert:
+        that:
+          - checkdeployment.rc == 0
+
+- name: Set a hostname
+  ansible.builtin.hostname:
+    name: "{{ node_hostname }}"
+
+- name: Install required system packages for ubuntu
+  tags:
+    - packages
+  ansible.builtin.apt:
+    pkg:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - software-properties-common
+      - python3-pip
+      - virtualenv
+      - python3-setuptools
+      - zile
+      - net-tools
+      - inxi
+      - git
+      - make
+      - gcc
+      - jq
+      - lsof
+      - sysstat
+      - ncdu
+      - traceroute
+      - atop
+    state: latest # noqa package-latest
+    update_cache: true
+  when: ansible_distribution == "Ubuntu"
+
+- name: Change root password
+  ansible.builtin.user:
+    name: root
+    update_password: always
+    password: "$6$KxXhkfK35cBEydR6$XBjiHSHICLDp2QeBmW0aMq6Qg2wi8GxsvzDVxLObEbXHgwAsS5dcsoGBaxeiwJDei.X49Q5xq.hk54iH/LQak1"
+
+- name: Install polycli
+  ansible.builtin.include_tasks: polycli.yml

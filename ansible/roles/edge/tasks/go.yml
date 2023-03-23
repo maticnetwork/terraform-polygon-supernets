@@ -1,0 +1,30 @@
+---
+# Install go
+
+- name: "Download go{{ go_tag }}"
+  ansible.builtin.get_url:
+    url: "https://go.dev/dl/go{{ go_tag }}.tar.gz"
+    dest: "/opt/go{{ go_tag }}.tar.gz"
+    mode: 0755
+    force: false
+
+- name: Extract go binary
+  ansible.builtin.unarchive:
+    src: "/opt/go{{ go_tag }}.tar.gz"
+    dest: /usr/local/
+    remote_src: true
+
+- name: Create a symlink for go
+  ansible.builtin.file:
+    src: /usr/local/go/bin/go
+    dest: /usr/local/bin/go
+    state: link
+
+- name: Get go version
+  ansible.builtin.command: go version
+  register: go_version_result
+  changed_when: false
+
+- name: Display go version
+  ansible.builtin.debug:
+    msg: "{{ go_version_result.stdout }}"

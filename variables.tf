@@ -55,18 +55,18 @@ variable "base_instance_type" {
 variable "fullnode_count" {
   description = "The number of full nodes that we're going to deploy"
   type        = number
-  default     = 6
+  default     = 3
 }
 variable "validator_count" {
   description = "The number of validators that we're going to deploy"
   type        = number
-  default     = 3
+  default     = 4
 }
 
 variable "jumpbox_count" {
   description = "The number of jump boxes that we're going to deploy"
   type        = number
-  default     = 1
+  default     = 0
 }
 
 variable "private_network_mode" {
@@ -79,7 +79,6 @@ variable "devnet_vpc_block" {
   type        = string
   default     = "10.10.0.0/16"
 }
-# 10.10.0.0/18
 variable "devnet_public_subnet" {
   description = "The cidr block for the public subnet in our VPC"
   type        = list(string)
@@ -94,16 +93,17 @@ variable "devnet_private_subnet" {
 variable "jumpbox_ssh_access" {
   description = "Which CIDRs should be allow to SSH into the jumpbox"
   type        = list(string)
+  default     = []
 }
 variable "network_acl" {
   description = "Which CIDRs should be allowed to access the explorer and RPC"
   type        = list(string)
-  default     = ["54.159.156.68/32", "34.192.184.1/32", "0.0.0.0/0"]
+  default     = ["0.0.0.0/0"]
 }
 variable "devnet_key_value" {
-  description = "The public key value to use for the ssh key"
+  description = "The public key value to use for the ssh key. Required when `create_ssh_key` is false"
   type        = string
-  default     = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIA513ky/mJ4oKMKX0OFF44NPN9cqiZ5CIyYAa5l8M4Z6 jhilliard@polygon.technology"
+  default     = ""
 }
 variable "jumpbox_instance_type" {
   description = "The type of instance that we're going to use for the jumpbox"

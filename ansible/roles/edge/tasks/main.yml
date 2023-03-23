@@ -1,0 +1,75 @@
+---
+- name: Set up the edge group
+  block:
+    - name: Create the edge group
+      ansible.builtin.group:
+        name: "{{ edge_user }}-group"
+        state: present
+    - name: Add the edge user to the edge group
+      ansible.builtin.user:
+        name: "{{ edge_user }}"
+        groups: "{{ edge_user }}-group"
+        comment: Edge Application user
+    - name: Add datadog user to the edge group
+      ansible.builtin.user:
+        name: dd-agent
+        groups: "{{ edge_user }}-group"
+        comment: Edge Application user
+        append: true
+
+- name: Create edge folders
+  block:
+    - name: Create folder for edge data
+      ansible.builtin.file:
+        path: "{{ edge_home_dir }}"
+        state: directory
+        owner: "{{ edge_user }}"
+        group: "{{ edge_user }}-group"
+        mode: 0750
+    - name: Create folder for edge configs
+      ansible.builtin.file:
+        path: /etc/edge
+        state: directory
+        mode: 0700
+        owner: "{{ edge_user }}"
+        group: "{{ edge_user }}-group"
+
+- name: Produce edge node lists
+  block:
+    - name: Produce edge fullnode list
+      ansible.builtin.template:
+        src: fullnodelist.txt
+        dest: /etc/edge/fullnodelist.txt
+        mode: 0700
+    - name: Produce edge validator list
+      ansible.builtin.template:
+        src: validatorlist.txt
+        dest: /etc/edge/validatorlist.txt
+        mode: 0700
+
+- name: Build edge binary
+  block:
+    - name: Install go
+      ansible.builtin.include_tasks: go.yml
+    - name: Build edge from source
+      ansible.builtin.include_tasks: build-edge.yml
+
+- name: Bootstrap edge
+  ansible.builtin.include_tasks: bootstrap-edge.yml
+
+- name: Create edge service file
+  ansible.builtin.template:
+    src: edge.service
+    dest: /etc/systemd/system/edge.service
+    mode: 0644
+  notify:
+    - Restart Edge Service
+
+- name: Set up edge monitoring
+  ansible.builtin.include_tasks: monitoring.yml
+
+- name: Restart Edge Service
+  ansible.builtin.systemd:
+    state: started
+    name: edge
+    enabled: true

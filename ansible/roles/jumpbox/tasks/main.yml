@@ -1,0 +1,20 @@
+---
+- name: Set up ansible
+  ansible.builtin.include_tasks: ansible.yml
+
+- name: Clone maticnetwork/polygon-devnets repository
+  ansible.builtin.git:
+    repo: git@github.com:maticnetwork/polygon-devnets.git
+    dest: /home/{{ ansible_user }}/polygon-devnets
+    version: main
+    accept_newhostkey: true
+    key_file: /etc/ansible/ssh.key
+  become_user: "{{ ansible_user }}"
+
+- name: Create folder for the deployment files
+  ansible.builtin.file:
+    dest: /home/{{ ansible_user }}/polygon-devnets/ansible/edge/files
+    state: directory
+    mode: 0700
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"

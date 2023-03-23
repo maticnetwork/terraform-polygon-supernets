@@ -1,0 +1,72 @@
+---
+
+# Should this file exist?  Who can say, but it's helpful in this
+# self-bootstrapping process of the jumpbox. Rather than requiring
+# that the jumpbox has AWS CLI working properlly, we can create a
+# version of an inventory that's no longer dynamic. In particular,
+# we're going to leave out the jumpbox itself
+
+{{ current_deploy_inventory }}:
+  hosts:
+{% for item in hostvars %}
+    {{ hostvars[item].private_ip_address }}:
+      private_ip_address: {{ hostvars[item].private_ip_address }}
+      tags:
+{% for tag in hostvars[item].tags %}
+        {{ tag }}: {{ hostvars[item].tags[tag] }}
+{% endfor %}
+{% endfor %}
+
+fullnode:
+  hosts:
+{% for item in hostvars %}
+{% if (hostvars[item].tags.Role == "fullnode") %}
+    {{ hostvars[item].private_ip_address }}:
+      private_ip_address: {{ hostvars[item].private_ip_address }}
+      tags:
+{% for tag in hostvars[item].tags %}
+        {{ tag }}: {{ hostvars[item].tags[tag] }}
+{% endfor %}
+{% endif %}
+{% endfor %}
+
+validator:
+  hosts:
+{% for item in hostvars %}
+{% if (hostvars[item].tags.Role == "validator") %}
+    {{ hostvars[item].private_ip_address }}:
+      private_ip_address: {{ hostvars[item].private_ip_address }}
+      tags:
+{% for tag in hostvars[item].tags %}
+        {{ tag }}: {{ hostvars[item].tags[tag] }}
+{% endfor %}
+{% endif %}
+{% endfor %}
+
+lightnode:
+  hosts:
+{% for item in hostvars %}
+{% if (hostvars[item].tags.Role == "lightnode") %}
+    {{ hostvars[item].private_ip_address }}:
+      private_ip_address: {{ hostvars[item].private_ip_address }}
+      tags:
+{% for tag in hostvars[item].tags %}
+        {{ tag }}: {{ hostvars[item].tags[tag] }}
+{% endfor %}
+{% endif %}
+{% endfor %}
+
+
+metrics:
+  hosts:
+{% for item in hostvars %}
+{% if (hostvars[item].tags.Role == "metrics") %}
+    {{ hostvars[item].private_ip_address }}:
+      private_ip_address: {{ hostvars[item].private_ip_address }}
+      tags:
+{% for tag in hostvars[item].tags %}
+        {{ tag }}: {{ hostvars[item].tags[tag] }}
+{% endfor %}
+{% endif %}
+{% endfor %}
+
