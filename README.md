@@ -3,10 +3,9 @@
   <img src="https://raw.githubusercontent.com/0xPolygon/polygon-edge/develop/.github/banner.jpg" alt="Polygon Edge" width="100%">
 </p>
 
-# Polygon Edge AWS Terraform
+# Polygon Supernets Terraform and Configs
 
 Polygon Edge is a modular and extensible framework for building Ethereum-compatible blockchain networks.
-
 To find out more about Polygon, visit the [official website](https://polygon.technology/).
 
 ### Documentation 📝
@@ -18,21 +17,22 @@ please check out the **[Polygon Edge Documentation](https://docs.polygon.technol
 
 This is a fully automated Polygon Edge blockchain infrastructure deployment for AWS cloud provider.
 
-High level overview of the resources that will be deployed:
+/modules - High level overview of the resources that will be deployed:
 * Dedicated VPC
 * 4 validator nodes (which are also boot nodes)
-* 4 NAT gateways to allow nodes outbound internet traffic
-* Lambda function used for generating the first (`genesis`) block and starting the chain
+* 3 NAT gateways to allow nodes outbound internet traffic
 * Dedicated security groups and IAM roles
 * S3 bucket used for storing `genesis.json` file
 * Application Load Balancer used for exposing the `JSON-RPC` endpoint
+/ansible
+*  generating the first (`genesis`) block and starting the chain
 
 ### Prerequisites
 
-Two variables that must be provided, before running the deployment:
+Variables that must be provided, before running the deployment:
 
-* `alb_ssl_certificate` - the ARN of the certificate from AWS Certificate Manager to be used by ALB for https protocol.   
-  The certificate must be generated before starting the deployment, and it must have **Issued** status.
+<!-- * `alb_ssl_certificate` - the ARN of the certificate from AWS Certificate Manager to be used by ALB for https protocol.   
+  The certificate must be generated before starting the deployment, and it must have **Issued** status. -->
 * `premine` - the account/s that will receive pre mined native currency.
   Value must follow the official [CLI](https://docs.polygon.technology/docs/edge/get-started/cli-commands#genesis-flags) flag specification.
 
@@ -40,8 +40,7 @@ Two variables that must be provided, before running the deployment:
 
 Only regions that have 4 availability zones are required for this deployment. Each node is deployed in a single AZ.
 
-By placing each node in a single AZ, the whole blockchain cluster is fault-tolerant to a single node (AZ) failure, as Polygon Edge implements IBFT
-consensus which allows a single node to fail in a 4 validator node cluster.
+By placing each node in a single AZ, the whole blockchain cluster is fault-tolerant to a single node (AZ) failure, as Polygon Edge implements PolyBFT consensus which allows a single node to fail in a 4 validator node cluster.
 
 ### Command line access
 
@@ -51,9 +50,9 @@ Nodes command line access is possible only via ***AWS Systems Manager - Session 
 
 ### Base AMI upgrade
 
-This deployment uses `ubuntu-focal-20.04-amd64-server` AWS AMI. It will **not** trigger EC2 *redeployment* if the AWS AMI gets updated.
+This deployment uses `ubuntu-jammy-22.04-amd64-server` AWS AMI. It will **not** trigger EC2 *redeployment* if the AWS AMI gets updated.
 
-If, for some reason, base AMI is required to get updated,
+<!-- If, for some reason, base AMI is required to get updated,
 it can be achieved by running `terraform taint` command for each instance, before `terraform apply`.   
 Instances can be tainted by running the `terraform taint module.instances[<instance_number>].aws_instance.polygon_edge_instance` command.
 
@@ -64,13 +63,13 @@ terraform taint module.instances[1].aws_instance.polygon_edge_instance
 terraform taint module.instances[2].aws_instance.polygon_edge_instance
 terraform taint module.instances[3].aws_instance.polygon_edge_instance
 terraform apply
-```
+``` -->
 
-### Resources cleanup
+<!-- ### Resources cleanup
 
-When cleaning up all resources by running `terraform destory`, the only thing that needs to be manually deleted
+When cleaning up all resources by running `terraform destroy`, the only thing that needs to be manually deleted
 are **validator keys** from **AWS SSM Parameter Store** as they are not stored via Terraform, but with `polygon-edge`
-process itself.
+process itself. -->
 
 ## Requirements
 
@@ -78,41 +77,27 @@ process itself.
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3.0 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 4.22.0 |
-| <a name="requirement_awscc"></a> [awscc](#requirement\_awscc) | >= 0.27.0 |
-| <a name="requirement_external"></a> [external](#requirement\_external) | >= 2.2.2 |
-| <a name="requirement_local"></a> [local](#requirement\_local) | >= 2.2.3 |
-| <a name="requirement_null"></a> [null](#requirement\_null) | >=3.1.1 |
+| <a name="requirement_ansible"></a> [ansible](#requirement\_ansible) | >= 2.14 |
+
 
 ## Providers
 
 | Name | Version |
 |------|---------|
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 4.22.0 |
-| <a name="provider_null"></a> [null](#provider\_null) | >=3.1.1 |
+| <a name="provider_datadog"></a> [datadog](#provider\_datadog) | >= 3.22.0 |
 
 ## Modules
 
-| Name | Source | Version |
+| Name | Source |
 |------|--------|---------|
-| <a name="module_alb"></a> [alb](#module\_alb) | ./modules/alb | n/a |
-| <a name="module_instances"></a> [instances](#module\_instances) | ./modules/instances | n/a |
-| <a name="module_lambda"></a> [lambda](#module\_lambda) | terraform-aws-modules/lambda/aws | >=3.3.1 |
-| <a name="module_s3"></a> [s3](#module\_s3) | terraform-aws-modules/s3-bucket/aws | >= 3.3.0 |
-| <a name="module_security"></a> [security](#module\_security) | ./modules/security | n/a |
-| <a name="module_user_data"></a> [user\_data](#module\_user\_data) | ./modules/user-data | n/a |
-| <a name="module_vpc"></a> [vpc](#module\_vpc) | aws-ia/vpc/aws | >= 3.0.1 |
-
-## Resources
-
-| Name | Type |
-|------|------|
-| [null_resource.download_package](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
-| [aws_availability_zones.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/availability_zones) | data source |
-| [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
-| [aws_iam_policy_document.genesis_s3](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
-| [aws_iam_policy_document.genesis_ssm](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
-| [aws_region.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/region) | data source |
-| [null_data_source.downloaded_package](https://registry.terraform.io/providers/hashicorp/null/latest/docs/data-sources/data_source) | data source |
+| <a name="module_dns"></a> [alb](#module\_dns) | ./modules/dns |
+| <a name="module_ebs"></a> [instances](#module\_ens) | ./modules/ebs |
+| <a name="module_ec2"></a> [lambda](#module\_ec2) | ./modules/ec2 |
+| <a name="module_elb"></a> [elb](#module\_elb) | ./modules/elb  |
+| <a name="module_networking"></a> [networking](#module\_networking) | ./modules/networking |
+| <a name="module_securitygroups"></a> [securitygroups](#module\_securitygroups) | ./modules/securitygroups |
+| <a name="module_ssm"></a> [ssm](#module\_ssm) | ./modules/ssm |
 
 ## Inputs
 
