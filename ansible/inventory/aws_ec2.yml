@@ -1,0 +1,25 @@
+---
+plugin: amazon.aws.aws_ec2
+
+regions:
+  - us-west-2
+
+keyed_groups:
+  - key: tags.Role
+    seperator: ""
+  - key: tags.BaseDN
+    seperator: ""
+  - key: tags.Hostname
+    seperator: ""
+
+# removes leading "_" note value _meta is a system value not tagged on any instances
+# requires ansible version>=2.11
+leading_separator: "no"
+
+cache: "yes"
+
+filters:
+  tag:BaseDN: "devnet01.edge.polygon.private"
+
+hostnames:
+  - instance-id

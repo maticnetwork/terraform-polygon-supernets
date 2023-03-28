@@ -1,0 +1,9 @@
+instances:
+  - openmetrics_endpoint: http://127.0.0.1:{{ edge_prometheus_port }}/metrics
+    namespace: edge
+    metrics:
+      - .*
+  - openmetrics_endpoint: http://127.0.0.1:{{ node_exporter_port }}/metrics
+    namespace: edge
+    metrics:
+      - node_disk_.*

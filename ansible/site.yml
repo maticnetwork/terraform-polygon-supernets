@@ -1,0 +1,45 @@
+- hosts: all:&{{ current_deploy_inventory }}
+  become: true
+  vars:
+    clean_deploy_title: "{{ clean_deploy_name }}"
+    datadog_api_token: "{{ datadog_api_key }}"
+    edge_tag: "{{ edge_tag }}"
+    git_token: "{{ git_pat_token }}"
+    polycli_tag: "{{ polycli_version_tag }}"
+  tags:
+    - init
+  roles:
+    - common
+
+- hosts: fullnode:validator:&{{ current_deploy_inventory }}
+  become: true
+  vars:
+    clean_deploy_title: "{{ clean_deploy_name }}"
+    edge_tag: "{{ edge_tag }}"
+    git_token: "{{ git_pat_token }}"
+  tags:
+    - edge
+  roles:
+    - mounted-storage
+    - edge
+
+- hosts: fullnode:validator:&{{ current_deploy_inventory }}
+  become: true
+  tags:
+    - metrics
+  roles:
+    - cloudalchemy.node_exporter
+
+- hosts: jumpbox:&{{ current_deploy_inventory }}
+  become: true
+  tags:
+    - jumpbox
+  roles:
+    - role: jumpbox
+
+- hosts: fullnode:validator:&{{ current_deploy_inventory }}
+  become: true
+  tags:
+    - haproxy
+  roles:
+    - haproxy

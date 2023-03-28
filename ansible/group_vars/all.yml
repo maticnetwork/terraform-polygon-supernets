@@ -1,0 +1,38 @@
+---
+deployment_name: "{{ clean_deploy_title }}"
+base_dn: "{{ deployment_name }}.edge.polygon.private"
+
+node_name: "{{ hostvars[inventory_hostname].tags.Hostname }}"
+edge_domain: "{{ base_dn }}"
+node_hostname: "{{ node_name }}.{{ edge_domain }}"
+
+edge_home_dir: /var/lib/edge
+edge_user: edge
+
+is_validator: false
+
+# If we're deploying from an OLD commit hash this is complicated. It
+# might be better just to override this manually in that case. My
+# assumption is that if we're running this ansible scripts with a
+# commit hash, it's probably to test a new versino of the client, not
+# an old one.
+is_legacy_mode: |
+  {{ true if edge_tag is regex("^v.*") and edge_tag < "v0.6" else false }}
+
+loadtest_account: "0x85da99c8a7c2c95964c8efd687e95e632fc533d6"
+
+edge_grpc_port: 10000
+edge_p2p_port: 10001
+edge_jsonrpc_port: 10002
+
+edge_prometheus_port: 9091
+node_exporter_port: 9092
+node_exporter_web_listen_address: 127.0.0.1:{{ node_exporter_port }}
+
+haproxy_port: 10222
+
+# This is the configuration related to mounting a separate device
+storage_device_name: nvme1n1
+storage_device_location: /dev/{{ storage_device_name }}
+storage_mount_point: "{{ edge_home_dir }}"
+storage_partition_name: State Data

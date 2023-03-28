@@ -1,0 +1,101 @@
+[Unit]
+Description=Polygon Edge Client
+Documentation=https://github.com/0xPolygon/polygon-edge/
+
+# Bring this up after the network is online
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+ExecStart=polygon-edge server --data-dir {{ edge_home_dir }} \
+    --chain {{ edge_home_dir }}/genesis.json \
+    --grpc-address 0.0.0.0:{{ edge_grpc_port }} \
+    --json-rpc-batch-request-limit 999 \
+    --libp2p 0.0.0.0:{{ edge_p2p_port }} \
+    --jsonrpc 0.0.0.0:{{ edge_jsonrpc_port }} \
+    --prometheus 127.0.0.1:{{ edge_prometheus_port }} \
+    --max-slots 276480 \
+    {% if (not is_legacy_mode) %}
+    --max-enqueued 276480 \
+    {% endif %}
+    --log-level INFO \
+    --block-gas-target {{ block_gas_limit }} \
+    --block-time {{ block_time }} \
+    {% if is_validator %}
+    --seal
+    {% endif %}
+
+MemoryHigh={{ (ansible_memtotal_mb * 0.7) | round | int }}M
+MemoryMax={{ (ansible_memtotal_mb * 0.8) | round | int }}M
+MemorySwapMax=0
+
+Restart=on-failure
+RestartSec=5s
+
+Type=simple
+
+User={{ edge_user }}
+Group={{ edge_user }}-group
+
+TimeoutStartSec=infinity
+TimeoutStopSec=600
+
+RuntimeDirectory=edge
+RuntimeDirectoryMode=0700
+
+ConfigurationDirectory=edge
+ConfigurationDirectoryMode=0700
+
+StateDirectory=edge
+StateDirectoryMode=0750
+
+# Hardening measures
+# https://www.linuxjournal.com/content/systemd-service-strengthening
+# sudo systemd-analyze security
+# systemd-analyze syscall-filter
+####################
+
+# Provide a private /tmp and /var/tmp.
+PrivateTmp=true
+
+# Mount /usr, /boot/ and /etc read-only for the process.
+ProtectSystem=full
+
+# Deny access to /home, /root and /run/user
+ProtectHome=true
+
+# Disallow the process and all of its children to gain
+# new privileges through execve().
+NoNewPrivileges=true
+
+# Use a new /dev namespace only populated with API pseudo devices
+# such as /dev/null, /dev/zero and /dev/random.
+PrivateDevices=true
+
+# Deny the creation of writable and executable memory mappings.
+MemoryDenyWriteExecute=true
+
+# Deny any ability to create namespaces. Should not be needed
+RestrictNamespaces=true
+
+# Restrict any kind of special capabilities
+CapabilityBoundingSet=
+
+# Allow minimal system calls for IO (filesystem network) and basic systemctl operations
+SystemCallFilter=@signal @network-io @ipc @file-system @chown @system-service
+
+# Access to  /sys/fs/cgroup/ should not be needed
+ProtectControlGroups=true
+
+# We don't need access to special file systems or extra kernel modules to work
+ProtectKernelModules=true
+
+# Access to proc/sys/, /sys/, /proc/sysrq-trigger, /proc/latency_stats, /proc/acpi, /proc/timer_stats, /proc/fs and /proc/irq is not needed
+ProtectKernelTunables=true
+
+# From the docsk "As the SUID/SGID bits are mechanisms to elevate privileges, and allow users to acquire the identity of other users, it is recommended to restrict creation of SUID/SGID files to the few programs that actually require them"
+RestrictSUIDSGID=true
+
+[Install]
+WantedBy=multi-user.target
+
