@@ -21,6 +21,9 @@ variable "devnet_public_subnet_ids" {
 variable "fullnode_instance_ids" {
   type = list(string)
 }
+variable "validator_instance_ids" {
+  type = list(string)
+}
 variable "devnet_id" {
   type = string
 }

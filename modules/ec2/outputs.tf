@@ -10,12 +10,12 @@ output "fullnode_private_ips" {
   value = aws_network_interface.fullnode_private.*.private_ip
 }
 
-output "validator_instance_ids" {
-  value = aws_instance.validator.*.id
-}
-
 output "fullnode_instance_ids" {
   value = aws_instance.fullnode.*.id
+}
+
+output "validator_instance_ids" {
+  value = aws_instance.validator.*.id
 }
 
 output "validator_primary_network_interface_ids" {

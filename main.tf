@@ -74,6 +74,7 @@ module "elb" {
   devnet_private_subnet_ids = module.networking.devnet_private_subnet_ids
   devnet_public_subnet_ids = module.networking.devnet_public_subnet_ids
   fullnode_instance_ids = module.ec2.fullnode_instance_ids
+  validator_instance_ids = module.ec2.validator_instance_ids
   devnet_id = module.networking.devnet_id
   security_group_open_http_id = module.securitygroups.security_group_open_http_id
   security_group_default_id = module.securitygroups.security_group_default_id

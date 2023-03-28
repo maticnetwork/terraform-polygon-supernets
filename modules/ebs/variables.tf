@@ -20,4 +20,4 @@ variable "validator_instance_ids" {
 }
 variable "fullnode_instance_ids" {
   type        = list(string)
-  }
+}
