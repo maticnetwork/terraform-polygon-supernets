@@ -4,31 +4,15 @@ current_deploy_inventory: devnet01_edge_polygon_private
 
 edge_tag: v0.8.0
 use_edge_manifest: true
-# edge_tag: v0.7.1-alpha2
-# edge_tag: v0.7.0-alpha1
-# edge_tag: v0.6.1
-# edge_tag: v0.5.1
-# edge_tag: v0.5.0
-# edge_tag: e6f620fd815abb38beed6ce4b38283356125465f #ferran performance improvments
-# forked repo edge_tag: v0.7.0-alpha2+cf9cd593
 
 polycli_tag: 0.1.18
 go_tag: 1.19.5.linux-amd64
-# go_tag: 1.18.9.linux-amd64
-
-# block_gas_limit: 200_000_000 # seems to be the real max for EOA to EOA
-# block_gas_limit: 45_000_000 # 23446 * 1000 * 1.5 : 23K is the amount of gas for the ERC20.. 1000 seems to be the amount we tend to fit in a block... 1.5 is how long it tends to take to build the block
-# block_gas_limit: 150_000_000
-# block_time: 2
-# block_time: 1
 
 block_gas_limit: 50_000_000
 block_time: 5
 
 consensus_protocol: polybft
 chain_id: 2001
-
-# consensus_protocol: ibft
 
 blockscout_version: v4.1.8-beta
 blockscout_db_password: !vault |

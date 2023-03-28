@@ -55,7 +55,7 @@ variable "base_instance_type" {
 variable "fullnode_count" {
   description = "The number of full nodes that we're going to deploy"
   type        = number
-  default     = 3
+  default     = 0
 }
 variable "validator_count" {
   description = "The number of validators that we're going to deploy"
