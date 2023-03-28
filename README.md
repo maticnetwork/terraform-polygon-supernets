@@ -87,15 +87,15 @@ process itself. -->
 
 ## Modules
 
-| Name | Source |
-|------|--------|---------|
-| <a name="module_dns"></a> [alb](#module\_dns) | ./modules/dns |
-| <a name="module_ebs"></a> [instances](#module\_ens) | ./modules/ebs |
-| <a name="module_ec2"></a> [lambda](#module\_ec2) | ./modules/ec2 |
-| <a name="module_elb"></a> [elb](#module\_elb) | ./modules/elb  |
-| <a name="module_networking"></a> [networking](#module\_networking) | ./modules/networking |
-| <a name="module_securitygroups"></a> [securitygroups](#module\_securitygroups) | ./modules/securitygroups |
-| <a name="module_ssm"></a> [ssm](#module\_ssm) | ./modules/ssm |
+| Name | Source 
+|------|--------|
+| <a name="module_dns"></a> [alb](#module\_dns) | ./modules/dns 
+| <a name="module_ebs"></a> [instances](#module\_ens) | ./modules/ebs 
+| <a name="module_ec2"></a> [lambda](#module\_ec2) | ./modules/ec2 
+| <a name="module_elb"></a> [elb](#module\_elb) | ./modules/elb  
+| <a name="module_networking"></a> [networking](#module\_networking) | ./modules/networking 
+| <a name="module_securitygroups"></a> [securitygroups](#module\_securitygroups) | ./modules/securitygroups 
+| <a name="module_ssm"></a> [ssm](#module\_ssm) | ./modules/ssm 
 
 ## Inputs
 
