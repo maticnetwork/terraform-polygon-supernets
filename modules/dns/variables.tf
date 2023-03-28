@@ -27,6 +27,6 @@ variable "validator_private_ips" {
 variable "fullnode_private_ips" {
   type = list(string)
 }
-variable "aws_lb_domain" {
+variable "aws_lb_int_rpc_domain" {
   type = string
 }

@@ -27,7 +27,7 @@ module "dns" {
   validator_count              = var.validator_count
 
   devnet_id = "${module.networking.devnet_id}"
-  aws_lb_domain = "${module.elb.aws_lb_domain}"
+  aws_lb_int_rpc_domain = "${module.elb.aws_lb_int_rpc_domain}"
   validator_private_ips = module.ec2.validator_private_ips
   fullnode_private_ips = module.ec2.fullnode_private_ips
 }

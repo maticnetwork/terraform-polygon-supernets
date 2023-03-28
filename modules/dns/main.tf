@@ -57,6 +57,6 @@ resource "aws_route53_record" "int_rpc" {
   name    = "int-rpc.${var.base_dn}"
   type    = "CNAME"
   ttl     = "60"
-  records = [var.aws_lb_domain]
+  records = [var.aws_lb_int_rpc_domain]
 }
 
