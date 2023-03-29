@@ -2,14 +2,14 @@
 
 # Polygon Supernets AWS Terraform
 
-Polygon Supernets is Polygon's solution to build and power dedicated app-chains. Supernets are powered by Polygon's cutting-edge EVM technology, industry-leading blockchain tools and premium end-to-end support. 
+Polygon Supernets is Polygon's solution to build and power dedicated app-chains. Supernets are powered by Polygon's cutting-edge EVM technology, industry-leading blockchain tools and premium end-to-end support.
 
 To find out more about Polygon, visit the [official website](https://polygon.technology/polygon-supernets).
 
 ### Documentation 📝
 
 If you'd like to learn more about the Polygon Supernets, how it works and how you can use it for your project,
-please check out the **[Polygon Supernets Documentation](https://docs.polygon.technology/docs/edge/overview/)**.
+please check out the **[Polygon Supernets Documentation](https://wiki.polygon.technology/docs/category/build-a-supernet)**.
 
 ## Terraform deployment
 
@@ -29,7 +29,7 @@ This is a fully automated Polygon Supernet blockchain infrastructure deployment 
 
 Variables that must be provided, before running the deployment:
 
-<!-- * `alb_ssl_certificate` - the ARN of the certificate from AWS Certificate Manager to be used by ALB for https protocol.   
+<!-- * `alb_ssl_certificate` - the ARN of the certificate from AWS Certificate Manager to be used by ALB for https protocol.
   The certificate must be generated before starting the deployment, and it must have **Issued** status. -->
 * `premine` - the account/s that will receive pre mined native currency.
   Value must follow the official [CLI](https://docs.polygon.technology/docs/edge/get-started/cli-commands#genesis-flags) flag specification.
@@ -43,7 +43,7 @@ By placing each node in a single AZ, the whole blockchain cluster is fault-toler
 ### Command line access
 
 Validator nodes are not exposed in any way to the public internet (JSON-PRC is accessed only via ALB)
-and they don't even have public IP addresses attached to them.  
+and they don't even have public IP addresses attached to them.
 Nodes command line access is possible only via ***AWS Systems Manager - Session Manager***.
 
 ### Base AMI upgrade
@@ -51,7 +51,7 @@ Nodes command line access is possible only via ***AWS Systems Manager - Session 
 This deployment uses `ubuntu-jammy-22.04-amd64-server` AWS AMI. It will **not** trigger EC2 *redeployment* if the AWS AMI gets updated.
 
 <!-- If, for some reason, base AMI is required to get updated,
-it can be achieved by running `terraform taint` command for each instance, before `terraform apply`.   
+it can be achieved by running `terraform taint` command for each instance, before `terraform apply`.
 Instances can be tainted by running the `terraform taint module.instances[<instance_number>].aws_instance.polygon_edge_instance` command.
 
 Example:
@@ -87,15 +87,15 @@ process itself. -->
 
 ## Modules
 
-| Name | Source 
+| Name | Source
 |------|--------|
-| <a name="module_dns"></a> [alb](#module\_dns) | ./modules/dns 
-| <a name="module_ebs"></a> [instances](#module\_ens) | ./modules/ebs 
-| <a name="module_ec2"></a> [lambda](#module\_ec2) | ./modules/ec2 
-| <a name="module_elb"></a> [elb](#module\_elb) | ./modules/elb  
-| <a name="module_networking"></a> [networking](#module\_networking) | ./modules/networking 
-| <a name="module_securitygroups"></a> [securitygroups](#module\_securitygroups) | ./modules/securitygroups 
-| <a name="module_ssm"></a> [ssm](#module\_ssm) | ./modules/ssm 
+| <a name="module_dns"></a> [alb](#module\_dns) | ./modules/dns
+| <a name="module_ebs"></a> [instances](#module\_ens) | ./modules/ebs
+| <a name="module_ec2"></a> [lambda](#module\_ec2) | ./modules/ec2
+| <a name="module_elb"></a> [elb](#module\_elb) | ./modules/elb
+| <a name="module_networking"></a> [networking](#module\_networking) | ./modules/networking
+| <a name="module_securitygroups"></a> [securitygroups](#module\_securitygroups) | ./modules/securitygroups
+| <a name="module_ssm"></a> [ssm](#module\_ssm) | ./modules/ssm
 
 ## Inputs
 
