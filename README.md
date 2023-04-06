@@ -103,9 +103,6 @@ Run `terraform destroy` when cleaning up all resources.
 | <a name="environment"></a> [environment](#environment) | The environment for deployment for this particular deployment | `string` | `"devnet"` | no |
 | <a name="fullnode_count"></a> [fullnode_count](#fullnode_count) | The number of full nodes that we're going to deploy | `number` | `0` | no |
 | <a name="http_rpc_port"></a> [http_rpc_port](#http_rpc_port) | The TCP port that will be used for http rpc | `number` | `10002` | no |
-| <a name="jumpbox_count"></a> [jumpbox_count](#jumpbox_count) | The number of jump boxes that we're going to deploy". | `number` | `0` | no |
-| <a name="jumpbox_instance_type"></a> [jumpbox_instance_type](#jumpbox_instance_type) | The type of instance that we're going to use for the jumpbox". | `string` | `"c6a.large"` | no |
-| <a name="jumpbox_ssh_access"></a> [jumpbox_ssh_access](#jumpbox_ssh_access) | Set the epoch size | `string` | `["0.0.0.0/0"]` | no |
 | <a name="network_acl"></a> [network_acl](#network_acl) | Which CIDRs should be allowed to access the explorer and RPC. | `list(string)` | `["0.0.0.0/0"]` | no |
 | <a name="node_storage"></a> [node_storage](#node_storage) | The size of the storage disk attached to full nodes and validators | `number` | `10` | no |
 | <a name="owner"></a> [owner](#owner) | The main point of contact for this particular deployment. | `string` |  | yes |

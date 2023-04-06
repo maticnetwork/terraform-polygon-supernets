@@ -68,24 +68,6 @@ variable "http_rpc_port" {
   default     = 10002
 }
 
-variable "jumpbox_count" {
-  description = "The number of jump boxes that we're going to deploy"
-  type        = number
-  default     = 0
-}
-
-variable "jumpbox_instance_type" {
-  description = "The type of instance that we're going to use for the jumpbox"
-  type        = string
-  default     = "c6a.large"
-}
-
-variable "jumpbox_ssh_access" {
-  description = "Which CIDRs should be allow to SSH into the jumpbox"
-  type        = list(string)
-  default     = ["0.0.0.0/0"]
-}
-
 variable "network_acl" {
   description = "Which CIDRs should be allowed to access the explorer and RPC"
   type        = list(string)

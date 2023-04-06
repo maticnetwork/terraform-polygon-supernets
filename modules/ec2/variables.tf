@@ -19,11 +19,6 @@ variable "validator_count" {
   description = "The number of validators that we're going to deploy"
   type        = number
 }
-
-variable "jumpbox_count" {
-  description = "The number of jump boxes that we're going to deploy"
-  type        = number
-}
 variable "private_network_mode" {
   description = "True if vms should bey default run in the private subnets"
   type        = bool
@@ -58,8 +53,4 @@ variable "devnet_public_subnet_ids" {
 
 variable "ec2_profile_name" {
   type = string
-}
-variable "jumpbox_instance_type" {
-  description = "The type of instance that we're going to use for the jumpbox"
-  type        = string
 }

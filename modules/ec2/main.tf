@@ -81,24 +81,3 @@ resource "aws_instance" "fullnode" {
     Role     = "fullnode"
   }
 }
-
-resource "aws_instance" "jumpbox" {
-  ami                  = var.base_ami
-  instance_type        = var.jumpbox_instance_type
-  count                = var.jumpbox_count
-  key_name             = aws_key_pair.devnet.key_name
-  subnet_id            = element(var.devnet_public_subnet_ids, count.index)
-  iam_instance_profile = var.ec2_profile_name
-
-  root_block_device {
-    delete_on_termination = true
-    volume_size           = 30
-    volume_type           = "gp2"
-  }
-
-  tags = {
-    Name     = format("jumpbox-%03d.%s", count.index + 1, var.base_dn)
-    Hostname = format("jumpbox-%03d", count.index + 1)
-    Role     = "jumpbox"
-  }
-}

@@ -35,13 +35,6 @@
   roles:
     - prometheus.prometheus.node_exporter
 
-- hosts: jumpbox:&{{ current_deploy_inventory }}
-  become: true
-  tags:
-    - jumpbox
-  roles:
-    - role: jumpbox
-
 - hosts: fullnode:validator:&{{ current_deploy_inventory }}
   become: true
   tags:

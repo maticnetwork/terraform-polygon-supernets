@@ -24,6 +24,3 @@ output "validator_primary_network_interface_ids" {
 output "fullnode_primary_network_interface_ids" {
   value = aws_instance.fullnode.*.primary_network_interface_id
 }
-output "jumpbox_primary_network_interface_ids" {
-  value = aws_instance.jumpbox.*.primary_network_interface_id
-}

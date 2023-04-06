@@ -51,14 +51,12 @@ module "ec2" {
   base_ami              = local.base_ami
   fullnode_count        = var.fullnode_count
   validator_count       = var.validator_count
-  jumpbox_count         = var.jumpbox_count
   base_devnet_key_name  = format("%s_ssh_key", var.deployment_name)
   private_network_mode  = var.private_network_mode
   network_type          = local.network_type
   deployment_name       = var.deployment_name
   create_ssh_key        = var.create_ssh_key
   devnet_key_value      = var.devnet_key_value
-  jumpbox_instance_type = var.jumpbox_instance_type
 
   devnet_private_subnet_ids = module.networking.devnet_private_subnet_ids
   devnet_public_subnet_ids  = module.networking.devnet_public_subnet_ids
@@ -95,23 +93,19 @@ module "securitygroups" {
   depends_on = [
     module.networking
   ]
-  jumpbox_count      = var.jumpbox_count
   network_type       = local.network_type
   deployment_name    = var.deployment_name
-  jumpbox_ssh_access = var.jumpbox_ssh_access
   network_acl        = var.network_acl
   http_rpc_port      = var.http_rpc_port
 
   devnet_id                               = module.networking.devnet_id
   validator_primary_network_interface_ids = module.ec2.validator_primary_network_interface_ids
   fullnode_primary_network_interface_ids  = module.ec2.fullnode_primary_network_interface_ids
-  jumpbox_primary_network_interface_ids   = module.ec2.jumpbox_primary_network_interface_ids
 }
 
 module "ssm" {
   source             = "./modules/ssm"
   base_dn            = local.base_dn
-  jumpbox_ssh_access = var.jumpbox_ssh_access
   deployment_name    = var.deployment_name
   network_type       = local.network_type
 }

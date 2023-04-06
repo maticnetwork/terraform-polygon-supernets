@@ -32,7 +32,7 @@ resource "aws_security_group_rule" "all_node_instances" {
 }
 
 locals {
-  all_primary_network_interface_ids = concat(var.validator_primary_network_interface_ids, var.fullnode_primary_network_interface_ids, var.jumpbox_primary_network_interface_ids)
+  all_primary_network_interface_ids = concat(var.validator_primary_network_interface_ids, var.fullnode_primary_network_interface_ids)
   p2p_primary_network_interface_ids = concat(var.validator_primary_network_interface_ids, var.fullnode_primary_network_interface_ids)
 }
 
@@ -40,25 +40,6 @@ resource "aws_network_interface_sg_attachment" "all_node_instances" {
   count                = length(local.all_primary_network_interface_ids)
   security_group_id    = aws_security_group.all_node_instances.id
   network_interface_id = local.all_primary_network_interface_ids[count.index]
-}
-
-resource "aws_security_group" "open_ssh" {
-  name        = "open-ssh-access"
-  description = "configuration for open ssh access"
-  vpc_id      = var.devnet_id
-}
-resource "aws_security_group_rule" "open_ssh" {
-  type              = "ingress"
-  from_port         = 22
-  to_port           = 22
-  protocol          = "TCP"
-  cidr_blocks       = var.jumpbox_ssh_access
-  security_group_id = aws_security_group.open_ssh.id
-}
-resource "aws_network_interface_sg_attachment" "open_ssh" {
-  count                = var.jumpbox_count
-  security_group_id    = aws_security_group.open_ssh.id
-  network_interface_id = element(var.jumpbox_primary_network_interface_ids, count.index)
 }
 
 resource "aws_security_group" "open_rpc" {
