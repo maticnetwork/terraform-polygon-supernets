@@ -2,12 +2,21 @@ variable "http_rpc_port" {
   description = "The TCP port that will be used for http rpc"
   type        = number
 }
+variable "rootchain_rpc_port" {
+  description = "The TCP port that will be used for rootchain (for bridge)"
+  type        = number
+}
+
 variable "fullnode_count" {
   description = "The number of full nodes that we're going to deploy"
   type        = number
 }
 variable "validator_count" {
   description = "The number of validators that we're going to deploy"
+  type        = number
+}
+variable "geth_count" {
+  description = "The number of geth that we're going to deploy"
   type        = number
 }
 
@@ -22,6 +31,9 @@ variable "fullnode_instance_ids" {
   type = list(string)
 }
 variable "validator_instance_ids" {
+  type = list(string)
+}
+variable "geth_instance_ids" {
   type = list(string)
 }
 variable "devnet_id" {

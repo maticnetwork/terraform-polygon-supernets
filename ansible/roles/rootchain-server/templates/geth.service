@@ -1,55 +1,37 @@
 [Unit]
-Description=Polygon Edge Client
-Documentation=https://github.com/0xPolygon/polygon-edge/
+Description=Go Ethereum
+Documentation=https://github.com/ethereum/go-ethereum
 
 # Bring this up after the network is online
 After=network-online.target
 Wants=network-online.target
 
 [Service]
-ExecStart=polygon-edge server --data-dir {{ edge_home_dir }} \
-    --chain {{ edge_home_dir }}/genesis.json \
-    --grpc-address 0.0.0.0:{{ edge_grpc_port }} \
-    --json-rpc-batch-request-limit 999 \
-    --libp2p 0.0.0.0:{{ edge_p2p_port }} \
-    --jsonrpc 0.0.0.0:{{ edge_jsonrpc_port }} \
-    --prometheus 127.0.0.1:{{ edge_prometheus_port }} \
-    --max-slots 276480 \
-    {% if (not is_legacy_mode) %}
-    --max-enqueued 276480 \
-    {% endif %}
-    --log-level INFO \
-    --block-gas-target {{ block_gas_limit }} \
-    --num-block-confirmations 2 \
-    {% if (hostvars[inventory_hostname].tags.Hostname == "validator-001") %}
-   2
-    {% endif %}
-    {% if is_validator %}
-    --seal
-    {% endif %}
+ExecStart=geth --dev \
+               --dev.period 2 \
+    	       --http --http.addr 0.0.0.0 --http.api eth,net,web3,debug \
+        	   --ws --ws.addr 0.0.0.0
 
-MemoryHigh={{ (ansible_memtotal_mb * 0.7) | round | int }}M
-MemoryMax={{ (ansible_memtotal_mb * 0.8) | round | int }}M
-MemorySwapMax=0
+WorkingDirectory=/var/lib/geth
 
 Restart=on-failure
 RestartSec=5s
 
 Type=simple
 
-User={{ edge_user }}
-Group={{ edge_user }}-group
+User=geth
+Group=geth-group
 
 TimeoutStartSec=infinity
 TimeoutStopSec=600
 
-RuntimeDirectory=edge
+RuntimeDirectory=geth
 RuntimeDirectoryMode=0700
 
-ConfigurationDirectory=edge
-ConfigurationDirectoryMode=0700
+ConfigurationDirectory=geth
+ConfigurationDirectoryMode=0750
 
-StateDirectory=edge
+StateDirectory=geth
 StateDirectoryMode=0750
 
 # Hardening measures

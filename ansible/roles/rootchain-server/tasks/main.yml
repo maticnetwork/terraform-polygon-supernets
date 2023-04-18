@@ -1,0 +1,83 @@
+---
+- name: Create the geth group
+  ansible.builtin.group:
+    name: geth-group
+    state: present
+
+- name: Add the geth user to the geth group
+  ansible.builtin.user:
+    name: geth
+    groups: geth-group
+    comment: geth Application user
+
+- name: Create the geth config directory
+  ansible.builtin.file:
+    path: /etc/geth
+    state: directory
+    owner: geth
+    group: geth-group
+    recurse: true
+    mode: 0750
+
+- name: Create the state directory
+  ansible.builtin.file:
+    path: /var/lib/geth
+    state: directory
+    owner: geth
+    group: geth-group
+    recurse: true
+    mode: 0750
+
+- name: Install go
+  ansible.builtin.include_tasks: go.yml
+
+- name: Clone geth repo
+  ansible.builtin.git:
+    repo: https://github.com/ethereum/go-ethereum
+    dest: /opt/go-ethereum
+    version: "{{ geth_tag }}"
+    force: true
+
+- name: Build geth
+  ansible.builtin.shell: |
+    pushd /opt/go-ethereum
+    make all
+    popd
+  args:
+    executable: /bin/bash
+    creates: /opt/go-ethereum/build/bin/geth
+
+- name: Copy geth to bin dir
+  ansible.builtin.copy:
+    src: /opt/go-ethereum/build/bin/geth
+    dest: /usr/local/bin/geth
+    remote_src: true
+    mode: 0755
+
+- name: Create the geth systemd file
+  ansible.builtin.template:
+    src: geth.service
+    dest: /etc/systemd/system/geth.service
+    mode: 0644
+
+# something is wonky here with the peering. Ideally these could be spaced out in some way?
+- name: Restart Geth Service to do initialization
+  throttle: 1
+  ansible.builtin.systemd:
+    state: restarted
+    name: geth
+    enabled: true
+    daemon_reload: true
+
+- name: Pause while geth starts
+  ansible.builtin.pause:
+    seconds: 5
+
+- name: Restart Geth Service to actually run
+  throttle: 1
+  ansible.builtin.systemd:
+    state: restarted
+    name: geth
+    enabled: true
+    daemon_reload: true
+

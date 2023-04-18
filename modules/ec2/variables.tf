@@ -54,3 +54,8 @@ variable "devnet_public_subnet_ids" {
 variable "ec2_profile_name" {
   type = string
 }
+
+variable "geth_count" {
+  description = "The number of geth nodes that we're going to deploy"
+  type        = number
+}

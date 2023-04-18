@@ -16,6 +16,10 @@ variable "validator_count" {
   description = "The number of validators that we're going to deploy"
   type        = number
 }
+variable "geth_count" {
+  description = "The number of geth that we're going to deploy"
+  type        = number
+}
 
 variable "devnet_id" {
   type = string
@@ -27,6 +31,12 @@ variable "validator_private_ips" {
 variable "fullnode_private_ips" {
   type = list(string)
 }
+variable "geth_private_ips" {
+  type = list(string)
+}
 variable "aws_lb_int_rpc_domain" {
+  type = string
+}
+variable "aws_lb_ext_rpc_geth_domain" {
   type = string
 }

@@ -13,6 +13,7 @@ variable "base_instance_type" {
 variable "company_name" {
   description = "The name of the company for this particular deployment"
   type        = string
+  default     = "polygon"
 }
 
 variable "create_ssh_key" {
@@ -24,6 +25,7 @@ variable "create_ssh_key" {
 variable "deployment_name" {
   description = "The unique name for this particular deployment"
   type        = string
+  default     = "devnet01"
 }
 
 variable "devnet_key_value" {
@@ -62,6 +64,18 @@ variable "fullnode_count" {
   default     = 0
 }
 
+variable "geth_count" {
+  description = "The number of geth nodes that we're going to deploy"
+  type        = number
+  default     = 1
+  validation {
+    condition = (
+      var.geth_count == 0 || var.geth_count == 1
+    )
+    error_message = "There should only be 1 geth node, or none (if you are using another public L1 chain for bridge)."
+  }
+}
+
 variable "http_rpc_port" {
   description = "The TCP port that will be used for http rpc"
   type        = number
@@ -80,9 +94,16 @@ variable "node_storage" {
   default     = 10
 }
 
+variable "rootchain_rpc_port" {
+  description = "The TCP port that will be used for rootchain (for bridge)"
+  type        = number
+  default     = 8545
+}
+
 variable "owner" {
   description = "The main point of contact for this particular deployment"
   type        = string
+  default     = "user@email.com"
 }
 
 variable "private_network_mode" {
