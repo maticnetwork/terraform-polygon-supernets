@@ -22,7 +22,7 @@ ExecStart=polygon-edge server --data-dir {{ edge_home_dir }} \
     --block-gas-target {{ block_gas_limit }} \
     --num-block-confirmations 2 \
     {% if (hostvars[inventory_hostname].tags.Hostname == "validator-001") %}
-   2
+    --relayer \
     {% endif %}
     {% if is_validator %}
     --seal
