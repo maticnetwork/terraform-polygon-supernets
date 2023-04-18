@@ -17,6 +17,13 @@
   roles:
     - common
 
+- hosts: geth:&{{ current_deploy_inventory }}
+  become: true
+  tags:
+    - edge
+  roles:
+    - rootchain-server
+
 - hosts: fullnode:validator:&{{ current_deploy_inventory }}
   become: true
   vars:

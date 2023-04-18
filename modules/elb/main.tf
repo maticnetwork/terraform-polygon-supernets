@@ -45,9 +45,9 @@ resource "aws_lb_target_group" "ext_rpc" {
   port        = var.http_rpc_port
 }
 resource "aws_lb_target_group_attachment" "ext_rpc" {
-  count            = var.fullnode_count
+  count            = var.fullnode_count > 0 ? var.fullnode_count : var.validator_count
   target_group_arn = aws_lb_target_group.ext_rpc.arn
-  target_id        = element(var.fullnode_instance_ids, count.index)
+  target_id        = element(var.fullnode_count > 0 ? var.fullnode_instance_ids : var.validator_instance_ids, count.index)
   port             = var.http_rpc_port
 }
 resource "aws_lb_listener" "ext_rpc" {
@@ -61,33 +61,33 @@ resource "aws_lb_listener" "ext_rpc" {
   }
 }
 
-resource "aws_lb" "ext_rpc_validator" {
-  name               = "ext-rpc-validator-${var.base_id}"
+resource "aws_lb" "ext_rpc_geth" {
+  name               = "ext-rpc-rootchain-${var.base_id}"
   load_balancer_type = "application"
   internal           = false
   subnets            = var.devnet_public_subnet_ids
   security_groups    = [var.security_group_open_http_id, var.security_group_default_id]
 }
-resource "aws_lb_target_group" "ext_rpc_validator" {
-  name        = "ext-rpc-validator-${var.base_id}"
+resource "aws_lb_target_group" "ext_rpc_geth" {
+  name        = "ext-rpc-rootchain-${var.base_id}"
   protocol    = "HTTP"
   target_type = "instance"
   vpc_id      = var.devnet_id
-  port        = var.http_rpc_port
+  port        = var.rootchain_rpc_port
 }
-resource "aws_lb_target_group_attachment" "ext_rpc_validator" {
-  count            = var.validator_count
-  target_group_arn = aws_lb_target_group.ext_rpc_validator.arn
-  target_id        = element(var.validator_instance_ids, count.index)
-  port             = var.http_rpc_port
+resource "aws_lb_target_group_attachment" "ext_rpc_geth" {
+  count            = var.geth_count
+  target_group_arn = aws_lb_target_group.ext_rpc_geth.arn
+  target_id        = element(var.geth_instance_ids, count.index)
+  port             = var.rootchain_rpc_port
 }
-resource "aws_lb_listener" "ext_rpc_validator" {
-  load_balancer_arn = aws_lb.ext_rpc_validator.arn
+resource "aws_lb_listener" "ext_rpc_geth" {
+  load_balancer_arn = aws_lb.ext_rpc_geth.arn
   port              = 80
   protocol          = "HTTP"
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.ext_rpc_validator.arn
+    target_group_arn = aws_lb_target_group.ext_rpc_geth.arn
   }
 }

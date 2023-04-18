@@ -73,7 +73,6 @@ Run `terraform destroy` when cleaning up all resources.
 | Name | Version |
 |------|---------|
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 4.22.0 |
-<!-- | <a name="provider_datadog"></a> [datadog](#provider\_datadog) | >= 3.22.0 | -->
 
 ## Terraform Modules
 
@@ -110,23 +109,6 @@ Run `terraform destroy` when cleaning up all resources.
 | <a name="region"></a> [region](#region) | The region where we want to deploy | `string` | `"us-west-2"` | no |
 | <a name="validator_count"></a> [validator_count](#validator_count) | The number of validators that we're going to deploy | `number` | `4` | no |
 | <a name="zones"></a> [zones](#zones) | The availability zones for deployment | `list(string)` | `["us-west-2a", "us-west-2b", "us-west-2c", "us-west-2d"]` | no |
-<!-- | <a name="input_max_validator_count"></a> [max\_validator\_count](#input\_max\_validator\_count) | The maximum number of stakers able to join the validator set in a PoS consensus. | `string` | `""` | no |
-| <a name="input_min_validator_count"></a> [min\_validator\_count](#input\_min\_validator\_count) | The minimum number of stakers needed to join the validator set in a PoS consensus. | `string` | `""` | no |
-| <a name="input_nat_address"></a> [nat\_address](#input\_nat\_address) | Sets the NAT address for the networking package | `string` | `""` | no |
-| <a name="input_node_name_prefix"></a> [node\_name\_prefix](#input\_node\_name\_prefix) | The name prefix that will be used to store secrets | `string` | `"node"` | no |
-| <a name="input_nodes_alb_name_prefix"></a> [nodes\_alb\_name\_prefix](#input\_nodes\_alb\_name\_prefix) | ALB name | `string` | `"jrpc-"` | no |
-| <a name="input_nodes_alb_name_tag"></a> [nodes\_alb\_name\_tag](#input\_nodes\_alb\_name\_tag) | ALB name tag | `string` | `"Polygon Edge JSON-RPC ALB"` | no |
-| <a name="input_nodes_alb_targetgroup_name_prefix"></a> [nodes\_alb\_targetgroup\_name\_prefix](#input\_nodes\_alb\_targetgroup\_name\_prefix) | ALB target group name | `string` | `"jrpc-"` | no |
-| <a name="input_polygon_edge_dir"></a> [polygon\_edge\_dir](#input\_polygon\_edge\_dir) | The directory to place all polygon-edge data and logs | `string` | `"/home/ubuntu/polygon"` | no |
-| <a name="input_pos"></a> [pos](#input\_pos) | Use PoS IBFT consensus | `bool` | `false` | no |
-| <a name="input_price_limit"></a> [price\_limit](#input\_price\_limit) | Sets minimum gas price limit to enforce for acceptance into the pool | `string` | `""` | no |
-| <a name="input_prometheus_address"></a> [prometheus\_address](#input\_prometheus\_address) | Enable Prometheus API | `string` | `""` | no |
-| <a name="input_s3_bucket_prefix"></a> [s3\_bucket\_prefix](#input\_s3\_bucket\_prefix) | Name prefix for new S3 bucket | `string` | `"polygon-edge-shared-"` | no |
-| <a name="input_s3_force_destroy"></a> [s3\_force\_destroy](#input\_s3\_force\_destroy) | Delete S3 bucket on destroy, even if the bucket is not empty | `bool` | `true` | no |
-| <a name="input_s3_key_name"></a> [s3\_key\_name](#input\_s3\_key\_name) | Name of the file in S3 that will hold configuration | `string` | `"chain-config"` | no |
-| <a name="input_ssm_parameter_id"></a> [ssm\_parameter\_id](#input\_ssm\_parameter\_id) | The id that will be used for storing and fetching from SSM Parameter Store | `string` | `"polygon-edge-validators"` | no |
-| <a name="input_vpc_cidr_block"></a> [vpc\_cidr\_block](#input\_vpc\_cidr\_block) | CIDR block for VPC | `string` | `"10.250.0.0/16"` | no |
-| <a name="input_vpc_name"></a> [vpc\_name](#input\_vpc\_name) | Name of the VPC | `string` | `"polygon-edge-vpc"` | no | -->
 
 ## Outputs
 
@@ -138,6 +120,9 @@ Run `terraform destroy` when cleaning up all resources.
 | <a name="base_dn"></a> [base_dn](#base_dn) | The BaseDN name for the network |
 | <a name="base_id"></a> [base_id](#base_id) | The Base ID for the network |
 <!-- END_TF_DOCS -->
+
+## Quick Deployment
+Run `run.sh`
 
 ## Terraform Deployment Steps
 1. Clone the repo
@@ -220,7 +205,9 @@ ansible-inventory --graph
 7. Check all your instances are reachable by ansible
 ```
 alias ansible='ansible --inventory inventory/aws_ec2.yml --vault-password-file=password.txt --extra-vars "@local-extra-vars.yml"'
-ansible -m all ping
+eval "$(ssh-agent)"
+ssh-add ~/.ssh/KEY_FILE.pem
+ansible all -m ping
 ```
 8. Run ansible playbook
 ```

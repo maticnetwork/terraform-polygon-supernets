@@ -1,0 +1,35 @@
+---
+clean_deploy_title: devnet01
+# ansible uses _ instead of -, so this is intentional
+current_deploy_inventory: devnet01_edge_polygon_private
+block_gas_limit: 50_000_000
+block_time: 2
+chain_id: 2001
+
+# cat ~/cert/2022-07-05-devnets-generic.key | ansible-vault encrypt_string --stdin-name devnet_default_ssh_key --vault-password password.txt
+# This value should only be needed for manually created devnets.
+
+ansible_ssh_private_key_file: ~/cert/devnet_private.key
+
+# you shouldn't need to change below
+polycli_tag: 0.1.18
+ansible_ssh_common_args: >
+  -o IdentitiesOnly=yes
+  -o StrictHostKeyChecking=no
+  -o ProxyCommand="sh -c \"aws ssm start-session --target %h --document-name AWS-StartSSHSession --parameters 'portNumber=%p'\""
+ansible_user: ubuntu
+ansible_become: true
+ansible_ssh_retries: 5
+clean_deploy_name: "{{ clean_deploy_title }}"
+git_pat_token: "{{ git_token }}"
+polycli_version_tag: "{{ polycli_tag }}"
+
+edge_tag: HEAD
+go_tag: 1.19.5.linux-amd64
+
+geth_tag: v1.11.2
+
+geth_miner_mnemonic: code code code code code code code code code code code quality
+geth_chain_id: 1001
+geth_http_port: 8545
+geth_p2p_port: 30303

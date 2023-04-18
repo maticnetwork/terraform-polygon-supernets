@@ -52,11 +52,36 @@ resource "aws_route53_record" "fullnode_private_reverse" {
   name    = join(".", reverse(split(".", element(var.fullnode_private_ips, count.index))))
 }
 
+resource "aws_route53_record" "geth" {
+  count   = var.geth_count
+  zone_id = aws_route53_zone.private_zone.zone_id
+  name    = format("geth-%03d.%s", count.index + 1, var.base_dn)
+  type    = "A"
+  ttl     = "60"
+  records = [element(var.geth_private_ips, count.index)]
+}
+resource "aws_route53_record" "geth_reverse" {
+  count   = var.geth_count
+  zone_id = aws_route53_zone.reverse_zone.zone_id
+  records = [format("geth-%03d.%s", count.index + 1, var.base_dn)]
+  type    = "PTR"
+  ttl     = "60"
+  name    = join(".", reverse(split(".", element(var.geth_private_ips, count.index))))
+}
+
 resource "aws_route53_record" "int_rpc" {
   zone_id = aws_route53_zone.private_zone.zone_id
   name    = "int-rpc.${var.base_dn}"
   type    = "CNAME"
   ttl     = "60"
   records = [var.aws_lb_int_rpc_domain]
+}
+
+resource "aws_route53_record" "geth_rpc" {
+  zone_id = aws_route53_zone.private_zone.zone_id
+  name    = "geth-rpc.${var.base_dn}"
+  type    = "CNAME"
+  ttl     = "60"
+  records = [var.aws_lb_ext_rpc_geth_domain]
 }
 
