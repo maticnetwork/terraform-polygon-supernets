@@ -1,6 +1,6 @@
-# terraform init
-# terraform plan
-# terraform apply -auto-approve
+terraform init
+terraform plan
+terraform apply -auto-approve
 
 terraform output pk_ansible > ~/cert/devnet_private.key
 ROOTCHAIN_RPC=$(terraform output -raw geth_private_ip)

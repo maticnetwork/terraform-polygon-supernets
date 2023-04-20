@@ -28,7 +28,7 @@
   ansible.builtin.shell: |
     cd /var/lib/bootstrap
     export PRIVATE_KEY=$(cat rootchain-wallet.json | jq -r '.HexPrivateKey')
-    export NATIVE_ERC20_ADDR=$(cat genesis.json | jq -r '.params.engine.polybft.bridge.rootNativeERC20Addr') 
+    export NATIVE_ERC20_ADDR=$(cat genesis.json | jq -r '.params.engine.polybft.bridge.nativeERC20Address') 
     npm install
     node /var/lib/bootstrap/deploy-and-run.js > /var/lib/bootstrap/run-deploy-output.txt
   when: hostvars[inventory_hostname].tags["Hostname"] == "validator-001"
