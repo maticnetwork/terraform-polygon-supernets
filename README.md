@@ -163,6 +163,8 @@ terraform apply -auto-approve
 ```
 terraform output pk_ansible > ~/.ssh/devnet_private.key
 chmod 600 ~/cert/devnet_private.key 
+eval "$(ssh-agent)"
+ssh-add ~/cert/devnet_private.key 
 ```
 
 ## Ansible Deployment Steps
@@ -204,10 +206,7 @@ ansible-inventory --graph
 ````
 7. Check all your instances are reachable by ansible
 ```
-alias ansible='ansible --inventory inventory/aws_ec2.yml --vault-password-file=password.txt --extra-vars "@local-extra-vars.yml"'
-eval "$(ssh-agent)"
-ssh-add ~/.ssh/KEY_FILE.pem
-ansible all -m ping
+ansible --inventory inventory/aws_ec2.yml --vault-password-file=password.txt --extra-vars "@local-extra-vars.yml" all -m ping
 ```
 8. Run ansible playbook
 ```
