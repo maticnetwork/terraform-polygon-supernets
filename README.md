@@ -161,10 +161,10 @@ terraform apply -auto-approve
 ```
 7. Save `terraform output pk_ansible` to a file. And change permissions so that only the owner of the file can read and write to the file.
 ```
-terraform output pk_ansible > ~/.ssh/devnet_private.key
-chmod 600 ~/cert/devnet_private.key 
+terraform output pk_ansible > ~/devnet_private.key
+chmod 600 ~/devnet_private.key 
 eval "$(ssh-agent)"
-ssh-add ~/cert/devnet_private.key 
+ssh-add ~/devnet_private.key 
 ```
 
 ## Ansible Deployment Steps

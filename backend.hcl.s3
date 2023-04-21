@@ -1,0 +1,3 @@
+bucket     = "polygon-edge-devnet-tf-states"
+key        = "state/devnet01"
+region     = "us-west-2"

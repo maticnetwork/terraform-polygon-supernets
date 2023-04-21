@@ -9,7 +9,7 @@ chain_id: 2001
 # cat ~/cert/2022-07-05-devnets-generic.key | ansible-vault encrypt_string --stdin-name devnet_default_ssh_key --vault-password password.txt
 # This value should only be needed for manually created devnets.
 
-ansible_ssh_private_key_file: ~/cert/devnet_private.key
+ansible_ssh_private_key_file: ~/devnet_private.key
 
 # you shouldn't need to change below
 polycli_tag: 0.1.18
