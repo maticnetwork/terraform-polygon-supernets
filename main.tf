@@ -6,11 +6,7 @@ locals {
 }
 
 terraform {
-  backend "s3" {
-    bucket = "polygon-edge-devnet-tf-states"
-    key    = "state/devnet01"
-    region = "us-west-2"
-  }
+  # backend "s3" {}
   required_providers {
     aws = {
       source  = "hashicorp/aws"
