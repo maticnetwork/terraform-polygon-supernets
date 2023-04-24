@@ -34,7 +34,6 @@ main() {
     polygon-edge genesis \
                 {% for item in hostvars %}{% if (hostvars[item].tags.Role == "validator") %} --validators /dns4/{{ hostvars[item].tags["Name"] }}/tcp/{{ edge_p2p_port }}/p2p/$(cat {{ hostvars[item].tags["Name"] }}.json | jq -r '.[0].node_id'):$(cat {{ hostvars[item].tags["Name"] }}.json | jq -r '.[0].address'):$(cat {{ hostvars[item].tags["Name"] }}.json | jq -r '.[0].bls_pubkey'):$(cat {{ hostvars[item].tags["Name"] }}.json | jq -r '.[0].bls_signature') {% endif %}{% endfor %} \
                  --consensus polybft \
-                 --grpc-address {{ rootchain_json_rpc }} \
                  {% for item in hostvars %}{% if (hostvars[item].tags.Role == "fullnode" or hostvars[item].tags.Role == "validator") %} --bootnode /dns4/{{ hostvars[item].tags["Name"] }}/tcp/{{ edge_p2p_port }}/p2p/$(cat {{ hostvars[item].tags["Name"] }}.json | jq -r '.[0].node_id') {% endif %}{% endfor %} \
                  {% for address in premine_address %} --premine {{ address }}:1000000000000000000000000000 {% endfor %}
                  --premine 0x0000000000000000000000000000000000000000 \
