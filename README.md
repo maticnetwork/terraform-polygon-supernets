@@ -218,3 +218,6 @@ ansible-playbook --inventory inventory/aws_ec2.yml --vault-password-file=passwor
 
 ## Destroy Procedure 💥
 In the root directory, run `terraform destroy -auto-approve`
+
+## Architecture Diagram
+![Architecture Diagram](architecture.png)
