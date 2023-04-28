@@ -122,6 +122,7 @@ Run `terraform destroy` when cleaning up all resources.
 <!-- END_TF_DOCS -->
 
 ## Quick Deployment
+### This is a 1-click way to set up the network. The steps below and the comments in run.sh describe what each command is for. If running in to errors and need troubleshooting, each line from the file should be run line-by-line to better identify issues.
 Run `run.sh`
 
 ## Terraform Deployment Steps
@@ -190,25 +191,27 @@ current_deploy_inventory: devnet01_edge_polygon_private
 block_gas_limit: 50_000_000
 block_time: 5
 chain_id: 2001
-
 ```
-5. Replace `vault_pass` in `local-extra-vars.yml` with the following encrypted value
+5. Add values with the accounts that you want to premine in `ansible/local-extra-vars.yml.template`. You can continue the list with the values that you need. Default premined balance: `1000000000000000000000000`
 ```
-cat password.txt | ansible-vault encrypt_string --stdin-name vault_pass --vault-password password.txt 
+premine_address:
+  - "{{ loadtest_account }}"
+  - 0x123456789012345678901234567890
 ```
-6. Replace the `--premine` values with the accounts that you want to premine in `roles/edge/templates/bootstrap.sh`. Either update the value for `loadtest_account` in `group_vars/all.yml` or replace with a new line. Format: `<address>:<balance>`. Default premined balance: `1000000000000000000000000`
+6. Create `local-extra-vars.yml` using the template
 ```
---premine {{ loadtest_account }}:1000000000000000000000000000 \
+cp local-extra-vars.yml.template local-extra-vars.yml
 ```
-6. Check if your instances are available by running the following.
+7. Append `rootchain_json_rpc: http://$ROOTCHAIN_RPC:8545" >> local-extra-vars.yml` to the `local-extra-vars.yml`
+8. Check if your instances are available by running the following.
 ```
 ansible-inventory --graph
-````
-7. Check all your instances are reachable by ansible
+```
+9. Check all your instances are reachable by ansible
 ```
 ansible --inventory inventory/aws_ec2.yml --vault-password-file=password.txt --extra-vars "@local-extra-vars.yml" all -m ping
 ```
-8. Run ansible playbook
+10. Run ansible playbook
 ```
 ansible-playbook --inventory inventory/aws_ec2.yml --vault-password-file=password.txt --extra-vars "@local-extra-vars.yml" site.yml
 ```
