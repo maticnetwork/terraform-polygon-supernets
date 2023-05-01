@@ -61,6 +61,21 @@ resource "aws_lb_listener" "ext_rpc" {
   }
 }
 
+resource "aws_lb_listener" "ext_rpc_secure" {
+  count             = 
+  load_balancer_arn = aws_lb.ext_rpc.arn
+  port              = 443
+  protocol          = "TLS"
+  certificate_arn   = aws_acm_certificate.ext_rpc.arn
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.ext_rpc.arn
+  }
+  # depends_on = [
+  #   aws_acm_certificate.ext_rpc
+  # ]
+}
+
 resource "aws_lb" "ext_rpc_geth" {
   name               = "ext-rpc-rootchain-${var.base_id}"
   load_balancer_type = "application"

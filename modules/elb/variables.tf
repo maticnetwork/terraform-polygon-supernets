@@ -48,3 +48,7 @@ variable "security_group_open_http_id" {
 variable "security_group_default_id" {
   type = string
 }
+
+variable "certificate_arn" {
+  type = string
+}

@@ -100,6 +100,12 @@ variable "rootchain_rpc_port" {
   default     = 8545
 }
 
+variable "route53_zone_id" {
+  description = "The ID of the hosted zone to contain the CNAME record to our LB"
+  type        = string
+  default     = ""
+}
+
 variable "owner" {
   description = "The main point of contact for this particular deployment"
   type        = string

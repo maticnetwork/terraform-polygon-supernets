@@ -23,6 +23,7 @@ module "dns" {
   fullnode_count  = var.fullnode_count
   validator_count = var.validator_count
   geth_count      = var.geth_count
+  route53_zone_id = var.route53_zone_id
 
   devnet_id                  = module.networking.devnet_id
   aws_lb_int_rpc_domain      = module.elb.aws_lb_int_rpc_domain
@@ -80,6 +81,7 @@ module "elb" {
   devnet_id                   = module.networking.devnet_id
   security_group_open_http_id = module.securitygroups.security_group_open_http_id
   security_group_default_id   = module.securitygroups.security_group_default_id
+  certificate_arn             = module.dns.certificate_arn
 }
 
 module "networking" {
