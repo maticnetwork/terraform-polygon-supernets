@@ -52,3 +52,8 @@ variable "security_group_default_id" {
 variable "certificate_arn" {
   type = string
 }
+
+variable "route53_zone_id" {
+  description = "The ID for external DNS"
+  type        = string
+}

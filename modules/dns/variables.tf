@@ -9,11 +9,6 @@ variable "region" {
   default     = "us-west-2"
 }
 
-variable "base_devnet_key_name" {
-  description = "base key pair name to use for devnet"
-  type        = string
-}
-
 variable "deployment_name" {
   description = "The unique name for this particular deployment"
   type        = string

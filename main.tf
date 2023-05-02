@@ -24,6 +24,7 @@ module "dns" {
   validator_count = var.validator_count
   geth_count      = var.geth_count
   route53_zone_id = var.route53_zone_id
+  deployment_name = var.deployment_name
 
   devnet_id                  = module.networking.devnet_id
   aws_lb_int_rpc_domain      = module.elb.aws_lb_int_rpc_domain
@@ -71,6 +72,7 @@ module "elb" {
   fullnode_count     = var.fullnode_count
   validator_count    = var.validator_count
   geth_count         = var.geth_count
+  route53_zone_id = var.route53_zone_id
   base_id            = local.base_id
 
   devnet_private_subnet_ids   = module.networking.devnet_private_subnet_ids

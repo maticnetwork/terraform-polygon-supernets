@@ -62,18 +62,15 @@ resource "aws_lb_listener" "ext_rpc" {
 }
 
 resource "aws_lb_listener" "ext_rpc_secure" {
-  count             = 
+  count             = var.route53_zone_id == "" ? 0 : 1
   load_balancer_arn = aws_lb.ext_rpc.arn
   port              = 443
-  protocol          = "TLS"
-  certificate_arn   = aws_acm_certificate.ext_rpc.arn
+  protocol          = "HTTPS"
+  certificate_arn   = var.certificate_arn
   default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.ext_rpc.arn
   }
-  # depends_on = [
-  #   aws_acm_certificate.ext_rpc
-  # ]
 }
 
 resource "aws_lb" "ext_rpc_geth" {
