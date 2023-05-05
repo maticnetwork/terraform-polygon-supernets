@@ -196,10 +196,44 @@ ansible --inventory inventory/aws_ec2.yml --extra-vars "@local-extra-vars.yml" a
 ansible-playbook --inventory inventory/aws_ec2.yml --extra-vars "@local-extra-vars.yml" site.yml
 ```
 
-After this full playbook runs you should have a functional supernet.
+After this full playbook runs you should have a functional
+supernet. If you want to do some tests, you can get your public rpc
+endpoint with the following command:
+
+```
+terraform output aws_lb_ext_domain
+```
+
+By default, we are pre-funding this address:
+`0x85da99c8a7c2c95964c8efd687e95e632fc533d6` which has the private key
+`0x42b6e34dc21598a807dc19d7784c71b2a7a01f6480dc6f58258f78e539f1a1fa`. Using
+that private key and the RPC address from the previous step you should
+be able to send transactions. The command below uses
+[cast](https://book.getfoundry.sh/cast/) to send a test transaction:
+
+
+```
+cast send --legacy \
+    --rpc-url http://ext-rpc-devnet13-edge-10623089.us-west-2.elb.amazonaws.com \
+    --value 1 \
+    --private-key 0x42b6e34dc21598a807dc19d7784c71b2a7a01f6480dc6f58258f78e539f1a1fa \
+    0x9f34dCBECFC0BD4c1ee3d12e1Fb5DCF1A0b9BCcB
+```
+
+This command uses
+[polycli](https://github.com/maticnetwork/polygon-cli) to do a simple
+load test. We're not required to specify a private key here because
+`0x42b6e34dc21598a807dc19d7784c71b2a7a01f6480dc6f58258f78e539f1a1fa`
+is the default load test address of `polycli`:
+
+```
+polycli loadtest --chain-id 1 --mode t --requests 10 \
+    --verbosity 601 http://ext-rpc-devnet13-edge-10623089.us-west-2.elb.amazonaws.com
+```
 
 ## Destroy Procedure 💥
-In the root directory, run `terraform destroy -auto-approve`
+
+In the root directory, run `terraform destroy`
 
 
 <!-- ## Quick Deployment -->
