@@ -6,43 +6,36 @@
     - name: Gather facts
       ansible.builtin.gather_facts:
 
-- hosts: all:&{{ current_deploy_inventory }}
+- hosts: all
   become: true
-  vars:
-    clean_deploy_title: "{{ clean_deploy_name }}"
-    edge_tag: "{{ edge_tag }}"
-    polycli_tag: "{{ polycli_version_tag }}"
   tags:
     - init
   roles:
     - common
 
-- hosts: geth:&{{ current_deploy_inventory }}
+- hosts: geth
   become: true
   tags:
-    - edge
+    - geth
   roles:
     - rootchain-server
 
-- hosts: fullnode:validator:&{{ current_deploy_inventory }}
+- hosts: fullnode:validator
   become: true
-  vars:
-    clean_deploy_title: "{{ clean_deploy_name }}"
-    edge_tag: "{{ edge_tag }}"
   tags:
     - edge
   roles:
     - mounted-storage
     - edge
 
-- hosts: fullnode:validator:&{{ current_deploy_inventory }}
+- hosts: fullnode:validator
   become: true
   tags:
     - metrics
   roles:
     - prometheus.prometheus.node_exporter
 
-- hosts: fullnode:validator:&{{ current_deploy_inventory }}
+- hosts: fullnode:validator
   become: true
   tags:
     - haproxy

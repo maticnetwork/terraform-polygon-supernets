@@ -11,15 +11,8 @@ edge_user: edge
 
 is_validator: false
 
-# If we're deploying from an OLD commit hash this is complicated. It
-# might be better just to override this manually in that case. My
-# assumption is that if we're running this ansible scripts with a
-# commit hash, it's probably to test a new versino of the client, not
-# an old one.
-is_legacy_mode: |
-  {{ true if edge_tag is regex("^v.*") and edge_tag < "v0.6" else false }}
-
 loadtest_account: "0x85da99c8a7c2c95964c8efd687e95e632fc533d6"
+rootchain_json_rpc: http://geth-001:8545
 
 edge_grpc_port: 10000
 edge_p2p_port: 10001
