@@ -2,7 +2,7 @@
 
 # Polygon Supernets AWS Terraform
 
-Polygon Supernets is Polygon's solution to build and power dedicated app-chains. Supernets are powered by Polygon's cutting-edge EVM technology, industry-leading blockchain tools and premium end-to-end support. 
+Polygon Supernets is Polygon's solution to build and power dedicated app-chains. Supernets are powered by Polygon's cutting-edge EVM technology, industry-leading blockchain tools and premium end-to-end support.
 
 To find out more about Polygon, visit the [official website](https://polygon.technology/polygon-supernets).
 
@@ -26,7 +26,7 @@ This is a fully automated Polygon Supernet blockchain infrastructure deployment 
 This deployment uses `ubuntu-jammy-22.04-amd64-server` AWS AMI. It will **not** trigger EC2 *redeployment* if the AWS AMI gets updated.
 
 If, for some reason, base AMI is required to get updated,
-it can be achieved by running `terraform taint` command for each instance, before `terraform apply`.   
+it can be achieved by running `terraform taint` command for each instance, before `terraform apply`.
 Instances can be tainted by running the `terraform taint module.instances[<instance_number>].aws_instance.polygon_edge_instance` command.
 
 Example:
@@ -76,15 +76,15 @@ Run `terraform destroy` when cleaning up all resources.
 
 ## Terraform Modules
 
-| Name | Source 
+| Name | Source
 |------|--------|
-| <a name="module_dns"></a> [dns](#module\_dns) | ./modules/dns 
-| <a name="module_ebs"></a> [ebs](#module\_ebs) | ./modules/ebs 
-| <a name="module_ec2"></a> [ec2](#module\_ec2) | ./modules/ec2 
-| <a name="module_elb"></a> [elb](#module\_elb) | ./modules/elb  
-| <a name="module_networking"></a> [networking](#module\_networking) | ./modules/networking 
-| <a name="module_securitygroups"></a> [securitygroups](#module\_securitygroups) | ./modules/securitygroups 
-| <a name="module_ssm"></a> [ssm](#module\_ssm) | ./modules/ssm 
+| <a name="module_dns"></a> [dns](#module\_dns) | ./modules/dns
+| <a name="module_ebs"></a> [ebs](#module\_ebs) | ./modules/ebs
+| <a name="module_ec2"></a> [ec2](#module\_ec2) | ./modules/ec2
+| <a name="module_elb"></a> [elb](#module\_elb) | ./modules/elb
+| <a name="module_networking"></a> [networking](#module\_networking) | ./modules/networking
+| <a name="module_securitygroups"></a> [securitygroups](#module\_securitygroups) | ./modules/securitygroups
+| <a name="module_ssm"></a> [ssm](#module\_ssm) | ./modules/ssm
 
 ## Ansible Inputs
 
@@ -134,7 +134,7 @@ git clone git@github.com:maticnetwork/terraform-polygon-supernets.git
 ```
 cd terraform-polygon-supernets
 ```
-3. Configure AWS on your terminal. To utilize AWS services, you need to set up your AWS credentials. There are two ways to set up these credentials: using the AWS CLI or manually setting them up in your AWS console. To learn more about setting up AWS credentials, check out the documentation provided by AWS [here](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html). `aws configure`, `aws configure sso`, or set appropriate variables in `~/.aws/credentials` or in `~/.aws/config`. You can directly set access keys like below. 
+3. Configure AWS on your terminal. To utilize AWS services, you need to set up your AWS credentials. There are two ways to set up these credentials: using the AWS CLI or manually setting them up in your AWS console. To learn more about setting up AWS credentials, check out the documentation provided by AWS [here](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html). `aws configure`, `aws configure sso`, or set appropriate variables in `~/.aws/credentials` or in `~/.aws/config`. You can directly set access keys like below.
 ```
 $ export AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
 $ export AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
@@ -143,7 +143,7 @@ $ export AWS_DEFAULT_REGION=us-west-2
 Note: The role of the AWS user should have permissions to create all of the resources provided in `/modules`.
 4. Set the environment variables. See `example.env`.
 ```
-set -a       
+set -a
 source example.env
 set +a
 ```
@@ -163,9 +163,9 @@ terraform apply -auto-approve
 7. Save `terraform output pk_ansible` to a file. And change permissions so that only the owner of the file can read and write to the file.
 ```
 terraform output pk_ansible > ~/devnet_private.key
-chmod 600 ~/devnet_private.key 
+chmod 600 ~/devnet_private.key
 eval "$(ssh-agent)"
-ssh-add ~/devnet_private.key 
+ssh-add ~/devnet_private.key
 ```
 
 ## Ansible Deployment Steps
