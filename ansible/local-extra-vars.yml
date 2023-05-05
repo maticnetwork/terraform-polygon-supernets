@@ -1,5 +1,5 @@
 ---
-clean_deploy_title: devnet01
+clean_deploy_title: devnet13
 
 block_gas_limit: 50_000_000
 block_time: 5

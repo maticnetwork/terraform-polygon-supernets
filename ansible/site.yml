@@ -31,13 +31,7 @@
 - hosts: fullnode:validator
   become: true
   tags:
-    - metrics
+    - haproxy
   roles:
-    - prometheus.prometheus.node_exporter
+    - haproxy
 
-- hosts: fullnode:validator
-  become: true
-  tags:
-    - haproxy
-  roles:
-    - haproxy

@@ -1,5 +1,3 @@
-<!-- BEGIN_TF_DOCS -->
-
 # Polygon Supernets AWS Terraform
 
 Polygon Supernets is Polygon's solution to build and power dedicated
@@ -19,43 +17,199 @@ Documentation](https://wiki.polygon.technology/docs/supernets/)**.
 
 ## Deploying resources with Terraform
 
-This is an automated Polygon Supernet blockchain infrastructure deployment for AWS cloud provider.
+This is an automated Polygon Supernet blockchain infrastructure
+deployment for AWS cloud provider. High level overview of the
+resources that will be deployed:
 
- - High level overview of the resources that will be deployed:
-* Dedicated VPC
-* 4 validator nodes (which are also boot nodes)
-* 3 NAT gateways to allow nodes outbound internet traffic
-* Dedicated security groups and IAM roles
-* Application Load Balancer used for exposing the `JSON-RPC` endpoint
+- Dedicated VPC
+- 4 validator nodes (which are also boot nodes)
+- 1 Root Chain (L1) Node running geth
+- Application Load Balancer used for exposing the `JSON-RPC` endpoint
 
-## Configuring Nodes with Ansible
-*  generating the first (`genesis`) block and starting the chain
+![Architecture Diagram](architecture.png)
 
-### Prerequisites
-Variables that must be provided, before running the deployment:
-* `premine` - the account/s that will receive pre mined native currency.
-  Value must follow the official [CLI](https://wiki.polygon.technology/docs/supernets/operate/supernets-local-deploy#3-create-a-genesis-file) flag specification.
-
-### Fault tolerance
-By placing each node in a single AZ, the whole blockchain cluster is fault-tolerant to a single node (AZ) failure, as Polygon Supernets implements PolyBFT consensus which allows a single node to fail in a 4 validator node cluster.
-
-### Command line access
-
-Validator nodes are not exposed in any way to the public internet (JSON-PRC is accessed only via ALB) and they don't have public IP addresses attached to them. Nodes command line access is possible only via ***AWS Systems Manager - Session Manager***.
-
-
-## Resources cleanup
-Run `terraform destroy` when cleaning up all resources.
 
 ## Requirements
+
+In order to use these automations, you'll need a few things installed:
 
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli) | >= 1.4.4 |
+| [Session Manager Plugin](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html) | |
 | <a name="requirement_aws"></a> [aws cli](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) | >= 2.11.0 |
 | <a name="requirement_ansible"></a> [ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html) | >= 2.14 |
 | <a name="requirement_boto3"></a> [boto3](https://pypi.org/project/boto3/) | >= 1.26 |
 | <a name="requirement_botocore"></a> [botocore](https://pypi.org/project/botocore/) | >= 1.29 |
+
+
+## Terraform Deployment Steps
+
+1. First, you'll want to clone the project repository and change
+   directories:
+
+```
+git clone git@github.com:maticnetwork/terraform-polygon-supernets.git
+cd terraform-polygon-supernets
+```
+
+2. Now we'll need to make sure our command like is capable of
+   executing AWS commands. To utilize AWS services, you need to set up
+   your AWS credentials. There are two ways to set up these
+   credentials: using the AWS CLI or manually setting them up in your
+   AWS console. To learn more about setting up AWS credentials, check
+   out the documentation provided by AWS
+   [here](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html). `aws
+   configure`, `aws configure sso`, or set appropriate variables in
+   `~/.aws/credentials` or in `~/.aws/config`. You can directly set
+   access keys like below.
+
+```
+$ export AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
+$ export AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+$ export AWS_DEFAULT_REGION=us-west-2
+```
+
+Note: The role of the AWS user should have permissions to create all
+of the resources provided in `/modules`.
+
+It's worthwhile at this point to confirm that AWS CLI is authenticated
+properly. Try running this command `aws sts get-caller-identity`. If
+this works, you're probably set to move forward.
+
+
+3. There are a few environment variables that should be set before
+   provisioning the infrastructure. Edit `example.env` based on your
+   requirements and then run the commands below to set your local
+   environment variables.
+
+```
+set -a
+source example.env
+set +a
+```
+
+You can quickly double check that your environment variables have been
+set by running `env | grep -i tf_var` to double check that the
+environment variables match what you specified in `example.env`
+
+The full list of variables that can be configured are in
+[variables.tf](./variables.tf).
+
+4. Now we'll run `terraform init` to download and install the provider
+   plugins, which are used to interact with AWS and initializes the
+   backend to store the state file.
+
+```
+terraform init
+```
+
+5. Now we're going to plan and apply using Terraform. While working
+   iteratively on your supernet, you'll typically make changes to the
+   Terraform modules, then plan to see what changes will be made to
+   your infrastructure, and then finally apply if the plan looks good.
+
+```
+terraform plan
+terraform apply
+```
+
+6. During the Terraform apply, a private key was generated to give you
+   access to your VMs. You'll need to shave that key using the
+   following commands.
+
+```
+terraform output pk_ansible > ~/devnet_private.key
+chmod 600 ~/devnet_private.key
+```
+
+At this point all of the AWS infrastructure needed to run a supernet
+should be deployed. This is a good time to login to your AWS Console
+and take a look.
+
+## Ansible Deployment Steps
+
+1. At this stage we'll be using Ansible to configure the VMs that we
+   just deployed with Terraform. First, Change working directory to
+   `ansible`.
+
+```
+cd ansible
+```
+
+2. The Ansible playbooks that we use have some external
+   dependencies. In order to retrieve those collections, you can run
+   the following command:
+
+```
+ansible-galaxy install -r requirements.yml
+```
+
+3. If you've changed your region, company name, or deployment name,
+   you'll need to modify `inventory/aws_ec2.yml`
+
+```
+regions:
+  - us-west-2
+###
+filters:
+  tag:BaseDN: "<YOUR_DEPLOYMENT_NAME>.edge.<YOUR_COMPANY>.private"
+```
+
+4. The file `local-extra-vars.yml` has a bunch of values that are
+   commonly tweaked during supernet deployments. At the very least,
+   you'll probably need to change `clean_deploy_title` to match
+   whatever deployment name you used.
+
+   Some of the other values like `block_gas_limit` and `block_time`
+   are important for performance and are worth setting very carefully.
+
+5. Check if your instances are available by running the following.
+
+```
+ansible-inventory --graph
+```
+
+This command will list a bunch of instances. It's important at this
+stage to make sure that your SSM and SSH are configured to be able to
+reach these instances based on their instance id. To test SSM, run a
+command like this:
+
+```
+aws ssm start-session --target [aws instance id]
+```
+
+An example instance id is `i-0641e8ff5f2a31647`. When you run this
+command you should have shell access to your VM.
+
+
+6. Now that we know we can access our VMs, we need to ensure the
+   instances are reachable by Ansible. Try running this command:
+
+```
+ansible --inventory inventory/aws_ec2.yml --extra-vars "@local-extra-vars.yml" all -m ping
+```
+
+
+7. Run ansible playbook
+```
+ansible-playbook --inventory inventory/aws_ec2.yml --extra-vars "@local-extra-vars.yml" site.yml
+```
+
+After this full playbook runs you should have a functional supernet.
+
+## Destroy Procedure 💥
+In the root directory, run `terraform destroy -auto-approve`
+
+
+<!-- ## Quick Deployment -->
+
+<!-- This is a 1-click way to set up the network. The steps below and the -->
+<!-- comments in run.sh describe what each command is for. If running in to -->
+<!-- errors and need troubleshooting, each line from the file should be run -->
+<!-- line-by-line to better identify issues. -->
+
+<!-- Run `run.sh` -->
 
 
 ## Terraform Providers
@@ -109,170 +263,3 @@ Run `terraform destroy` when cleaning up all resources.
 | <a name="aws_lb_ext_validator_domain"></a> [aws_lb_ext_validator_domain](#aws_lb_ext_validator_domain) | The dns name for the validator JSON-RPC API (external) |
 | <a name="base_dn"></a> [base_dn](#base_dn) | The BaseDN name for the network |
 | <a name="base_id"></a> [base_id](#base_id) | The Base ID for the network |
-<!-- END_TF_DOCS -->
-
-## Quick Deployment
-### This is a 1-click way to set up the network. The steps below and the comments in run.sh describe what each command is for. If running in to errors and need troubleshooting, each line from the file should be run line-by-line to better identify issues.
-Run `run.sh`
-
-## Terraform Deployment Steps
-
-1. First, you'll need to clone the repository
-```
-git clone git@github.com:maticnetwork/terraform-polygon-supernets.git
-```
-
-2. Change the current working directory to `terraform-polygon-supernets`.
-```
-cd terraform-polygon-supernets
-```
-
-3. Configure AWS on your terminal. To utilize AWS services, you need
-   to set up your AWS credentials. There are two ways to set up these
-   credentials: using the AWS CLI or manually setting them up in your
-   AWS console. To learn more about setting up AWS credentials, check
-   out the documentation provided by AWS
-   [here](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html). `aws
-   configure`, `aws configure sso`, or set appropriate variables in
-   `~/.aws/credentials` or in `~/.aws/config`. You can directly set
-   access keys like below.
-
-```
-$ export AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
-$ export AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
-$ export AWS_DEFAULT_REGION=us-west-2
-```
-
-Note: The role of the AWS user should have permissions to create all
-of the resources provided in `/modules`.
-
-It's worthwhile at this point to confirm that AWS CLI is authenticated
-properly. Try running this command `aws sts get-caller-identity`. If
-this works, you're probably set to move forward.
-
-
-4. There are a few environment variables that should be set before
-   provisioning the infrastructure. Edit `example.env` based on your
-   requirements and then run the commands below to set your local
-   environment variables.
-
-```
-set -a
-source example.env
-set +a
-```
-
-You can quickly double check that your environment variables have been
-set by running `env | grep -i tf_var` to double check that the
-environment variables match what you specified in `example.env`
-
-5. Run `terraform init`. Terraform downloads and installs the provider
-   plugins, which are used to interact with AWS and initializes the
-   backend to store the state file.
-
-```
-terraform init
-```
-
-6. Run `terraform plan`. Terraform compares the desired state (as
-   defined in your Terraform configuration files) to the current state
-   of your infrastructure and determines what actions need to be taken
-   to achieve the desired state.
-
-```
-terraform plan
-```
-
-6. Run `terraform apply`. Terraform creates, modifies, or deletes
-   resources as necessary to achieve the desired state.
-
-```
-terraform apply
-```
-
-7. Save `terraform output pk_ansible` to a file. And change
-   permissions so that only the owner of the file can read and write
-   to the file.
-
-```
-terraform output pk_ansible > ~/devnet_private.key
-chmod 600 ~/devnet_private.key
-eval "$(ssh-agent)"
-ssh-add ~/devnet_private.key
-```
-
-## Ansible Deployment Steps
-1. At this stage we'll be using Ansible to configure the VMs that we
-   just deployed with terraform. First, Change working directory to
-   `ansible`.
-
-```
-cd ansible
-```
-
-2. The Ansible playbooks that we use have some external
-   dependencies. In order to retrieve those collections, you can run
-   the following command:
-
-```
-ansible-galaxy install -r requirements.yml
-```
-
-3. As you use Ansible, you may have sensitive values. You can use
-   Ansible Vault to encrypt those values with a password. At this
-   point we'll generate a random password.
-
-```
-< /dev/urandom tr -dc A-Za-z0-9 | head -c${1:-32} > password.txt
-```
-
-4. Modify the `amazon.aws.aws_ec2` plugin is correctly filtering with
-   the right basedn in `inventory/aws_ec2.yml`.
-
-```
-filters:
-  tag:BaseDN: "<YOUR_DEPLOYMENT_NAME>.edge.<YOUR_COMPANY>.private"
-```
-
-5. Set the following variables in `local-extra-vars.yml`.
-
-```
-clean_deploy_title: devnet01 # YOUR_DEPLOYMENT_NAME
-current_deploy_inventory: devnet01_edge_polygon_private
-block_gas_limit: 50_000_000
-block_time: 5
-chain_id: 2001
-```
-
-6. Add values with the accounts that you want to premine in
-   `ansible/local-extra-vars.yml`. You can continue the list with the
-   values that you need. Default premined balance:
-   `1000000000000000000000000`
-
-```
-premine_address:
-  - "{{ loadtest_account }}"
-  - 0x123456789012345678901234567890
-```
-
-7. Append `rootchain_json_rpc: http://$ROOTCHAIN_RPC:8545" >>
-   local-extra-vars.yml` to the `local-extra-vars.yml`
-
-8. Check if your instances are available by running the following.
-```
-ansible-inventory --graph
-```
-9. Check all your instances are reachable by ansible
-```
-ansible --inventory inventory/aws_ec2.yml --extra-vars "@local-extra-vars.yml" all -m ping
-```
-10. Run ansible playbook
-```
-ansible-playbook --inventory inventory/aws_ec2.yml --extra-vars "@local-extra-vars.yml" site.yml
-```
-
-## Destroy Procedure 💥
-In the root directory, run `terraform destroy -auto-approve`
-
-## Architecture Diagram
-![Architecture Diagram](architecture.png)
