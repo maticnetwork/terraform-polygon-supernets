@@ -2,18 +2,24 @@
 
 # Polygon Supernets AWS Terraform
 
-Polygon Supernets is Polygon's solution to build and power dedicated app-chains. Supernets are powered by Polygon's cutting-edge EVM technology, industry-leading blockchain tools and premium end-to-end support.
+Polygon Supernets is Polygon's solution to build and power dedicated
+app-chains. Supernets are powered by Polygon's cutting-edge EVM
+technology, industry-leading blockchain tools and premium end-to-end
+support.
 
-To find out more about Polygon, visit the [official website](https://polygon.technology/polygon-supernets).
+To find out more about Polygon, visit the [official
+website](https://polygon.technology/polygon-supernets).
 
 ## Official Documentation 📝
 
-If you'd like to learn more about the Polygon Supernets, how it works and how you can use it for your project,
-please check out the **[Polygon Supernets Documentation](https://wiki.polygon.technology/docs/supernets/)**.
+If you'd like to learn more about the Polygon Supernets, how it works
+and how you can use it for your project, please check out the
+**[Polygon Supernets
+Documentation](https://wiki.polygon.technology/docs/supernets/)**.
 
-## Deploying resources with Terraform `/modules`
+## Deploying resources with Terraform
 
-This is a fully automated Polygon Supernet blockchain infrastructure deployment for AWS cloud provider.
+This is an automated Polygon Supernet blockchain infrastructure deployment for AWS cloud provider.
 
  - High level overview of the resources that will be deployed:
 * Dedicated VPC
@@ -22,22 +28,7 @@ This is a fully automated Polygon Supernet blockchain infrastructure deployment 
 * Dedicated security groups and IAM roles
 * Application Load Balancer used for exposing the `JSON-RPC` endpoint
 
-### Base AMI upgrade
-This deployment uses `ubuntu-jammy-22.04-amd64-server` AWS AMI. It will **not** trigger EC2 *redeployment* if the AWS AMI gets updated.
-
-If, for some reason, base AMI is required to get updated,
-it can be achieved by running `terraform taint` command for each instance, before `terraform apply`.
-Instances can be tainted by running the `terraform taint module.instances[<instance_number>].aws_instance.polygon_edge_instance` command.
-
-Example:
-```shell
-terraform taint module.instances[0].aws_instance.polygon_edge_instance
-terraform taint module.instances[1].aws_instance.polygon_edge_instance
-terraform taint module.instances[2].aws_instance.polygon_edge_instance
-terraform taint module.instances[3].aws_instance.polygon_edge_instance
-terraform apply
-```
-## Configuring Nodes with Ansible `/ansible`
+## Configuring Nodes with Ansible
 *  generating the first (`genesis`) block and starting the chain
 
 ### Prerequisites
@@ -51,7 +42,6 @@ By placing each node in a single AZ, the whole blockchain cluster is fault-toler
 ### Command line access
 
 Validator nodes are not exposed in any way to the public internet (JSON-PRC is accessed only via ALB) and they don't have public IP addresses attached to them. Nodes command line access is possible only via ***AWS Systems Manager - Session Manager***.
-
 
 
 ## Resources cleanup
@@ -126,41 +116,84 @@ Run `terraform destroy` when cleaning up all resources.
 Run `run.sh`
 
 ## Terraform Deployment Steps
-1. Clone the repo
+
+1. First, you'll need to clone the repository
 ```
 git clone git@github.com:maticnetwork/terraform-polygon-supernets.git
 ```
+
 2. Change the current working directory to `terraform-polygon-supernets`.
 ```
 cd terraform-polygon-supernets
 ```
-3. Configure AWS on your terminal. To utilize AWS services, you need to set up your AWS credentials. There are two ways to set up these credentials: using the AWS CLI or manually setting them up in your AWS console. To learn more about setting up AWS credentials, check out the documentation provided by AWS [here](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html). `aws configure`, `aws configure sso`, or set appropriate variables in `~/.aws/credentials` or in `~/.aws/config`. You can directly set access keys like below.
+
+3. Configure AWS on your terminal. To utilize AWS services, you need
+   to set up your AWS credentials. There are two ways to set up these
+   credentials: using the AWS CLI or manually setting them up in your
+   AWS console. To learn more about setting up AWS credentials, check
+   out the documentation provided by AWS
+   [here](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html). `aws
+   configure`, `aws configure sso`, or set appropriate variables in
+   `~/.aws/credentials` or in `~/.aws/config`. You can directly set
+   access keys like below.
+
 ```
 $ export AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
 $ export AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
 $ export AWS_DEFAULT_REGION=us-west-2
 ```
-Note: The role of the AWS user should have permissions to create all of the resources provided in `/modules`.
-4. Set the environment variables. See `example.env`.
+
+Note: The role of the AWS user should have permissions to create all
+of the resources provided in `/modules`.
+
+It's worthwhile at this point to confirm that AWS CLI is authenticated
+properly. Try running this command `aws sts get-caller-identity`. If
+this works, you're probably set to move forward.
+
+
+4. There are a few environment variables that should be set before
+   provisioning the infrastructure. Edit `example.env` based on your
+   requirements and then run the commands below to set your local
+   environment variables.
+
 ```
 set -a
 source example.env
 set +a
 ```
-5. Run `terraform init`. Terraform downloads and installs the provider plugins, which are used to interact with AWS and initializes the backend to store the state file.
+
+You can quickly double check that your environment variables have been
+set by running `env | grep -i tf_var` to double check that the
+environment variables match what you specified in `example.env`
+
+5. Run `terraform init`. Terraform downloads and installs the provider
+   plugins, which are used to interact with AWS and initializes the
+   backend to store the state file.
+
 ```
 terraform init
 ```
-5. Run `terraform plan`. Terraform compares the desired state (as defined in your Terraform configuration files) to the current state of your infrastructure and determines what actions need to be taken to achieve the desired state.
+
+6. Run `terraform plan`. Terraform compares the desired state (as
+   defined in your Terraform configuration files) to the current state
+   of your infrastructure and determines what actions need to be taken
+   to achieve the desired state.
+
 ```
 terraform plan
 ```
-6. Run `terraform apply`. Terraform creates, modifies, or deletes resources as necessary to achieve the desired state.
+
+6. Run `terraform apply`. Terraform creates, modifies, or deletes
+   resources as necessary to achieve the desired state.
 
 ```
-terraform apply -auto-approve
+terraform apply
 ```
-7. Save `terraform output pk_ansible` to a file. And change permissions so that only the owner of the file can read and write to the file.
+
+7. Save `terraform output pk_ansible` to a file. And change
+   permissions so that only the owner of the file can read and write
+   to the file.
+
 ```
 terraform output pk_ansible > ~/devnet_private.key
 chmod 600 ~/devnet_private.key
