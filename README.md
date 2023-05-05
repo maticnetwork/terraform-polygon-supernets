@@ -202,22 +202,40 @@ ssh-add ~/devnet_private.key
 ```
 
 ## Ansible Deployment Steps
-1. Change working directory to ansible
+1. At this stage we'll be using Ansible to configure the VMs that we
+   just deployed with terraform. First, Change working directory to
+   `ansible`.
+
 ```
 cd ansible
 ```
-2. Create the ansible vault passwords file. Then store your vault password securely in a file or a secret manager.
+
+2. The Ansible playbooks that we use have some external
+   dependencies. In order to retrieve those collections, you can run
+   the following command:
+
 ```
-touch password.txt
-VAULT_PASSWORD=*********************
-echo $VAULT_PASSWORD> > password.txt
+ansible-galaxy install -r requirements.yml
 ```
-3. Modify the `amazon.aws.aws_ec2` plugin is correctly filtering with the right basedn in `inventory/aws_ec2.yml`.
+
+3. As you use Ansible, you may have sensitive values. You can use
+   Ansible Vault to encrypt those values with a password. At this
+   point we'll generate a random password.
+
+```
+< /dev/urandom tr -dc A-Za-z0-9 | head -c${1:-32} > password.txt
+```
+
+4. Modify the `amazon.aws.aws_ec2` plugin is correctly filtering with
+   the right basedn in `inventory/aws_ec2.yml`.
+
 ```
 filters:
   tag:BaseDN: "<YOUR_DEPLOYMENT_NAME>.edge.<YOUR_COMPANY>.private"
 ```
-4. Set the following variables in `local-extra-vars.yml`.
+
+5. Set the following variables in `local-extra-vars.yml`.
+
 ```
 clean_deploy_title: devnet01 # YOUR_DEPLOYMENT_NAME
 current_deploy_inventory: devnet01_edge_polygon_private
@@ -225,28 +243,32 @@ block_gas_limit: 50_000_000
 block_time: 5
 chain_id: 2001
 ```
-5. Add values with the accounts that you want to premine in `ansible/local-extra-vars.yml.template`. You can continue the list with the values that you need. Default premined balance: `1000000000000000000000000`
+
+6. Add values with the accounts that you want to premine in
+   `ansible/local-extra-vars.yml`. You can continue the list with the
+   values that you need. Default premined balance:
+   `1000000000000000000000000`
+
 ```
 premine_address:
   - "{{ loadtest_account }}"
   - 0x123456789012345678901234567890
 ```
-6. Create `local-extra-vars.yml` using the template
-```
-cp local-extra-vars.yml.template local-extra-vars.yml
-```
-7. Append `rootchain_json_rpc: http://$ROOTCHAIN_RPC:8545" >> local-extra-vars.yml` to the `local-extra-vars.yml`
+
+7. Append `rootchain_json_rpc: http://$ROOTCHAIN_RPC:8545" >>
+   local-extra-vars.yml` to the `local-extra-vars.yml`
+
 8. Check if your instances are available by running the following.
 ```
 ansible-inventory --graph
 ```
 9. Check all your instances are reachable by ansible
 ```
-ansible --inventory inventory/aws_ec2.yml --vault-password-file=password.txt --extra-vars "@local-extra-vars.yml" all -m ping
+ansible --inventory inventory/aws_ec2.yml --extra-vars "@local-extra-vars.yml" all -m ping
 ```
 10. Run ansible playbook
 ```
-ansible-playbook --inventory inventory/aws_ec2.yml --vault-password-file=password.txt --extra-vars "@local-extra-vars.yml" site.yml
+ansible-playbook --inventory inventory/aws_ec2.yml --extra-vars "@local-extra-vars.yml" site.yml
 ```
 
 ## Destroy Procedure 💥
