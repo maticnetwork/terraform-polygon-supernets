@@ -15,7 +15,7 @@ and how you can use it for your project, please check out the
 **[Polygon Supernets
 Documentation](https://wiki.polygon.technology/docs/supernets/)**.
 
-## Deploying resources with Terraform
+## Architecture Overview
 
 This is an automated Polygon Supernet blockchain infrastructure
 deployment for AWS cloud provider. High level overview of the
