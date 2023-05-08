@@ -98,7 +98,7 @@ The full list of variables that can be configured are in
 [variables.tf](./variables.tf).
 
 4. Now we'll run `terraform init` to download and install the provider
-   plugins, which are used to interact with AWS and initializes the
+   plugins, which are used to interact with AWS and initialize the
    backend to store the state file.
 
 ```
