@@ -22,7 +22,7 @@ deployment for AWS cloud provider. High level overview of the
 resources that will be deployed:
 
 - Dedicated VPC
-- 4 validator nodes (which are also boot nodes)
+- 4 validator nodes (which are also bootnodes)
 - 1 rootchain (L1) node running Geth
 - Application Load Balancer used for exposing the `JSON-RPC` endpoint
 
@@ -53,16 +53,17 @@ git clone git@github.com:maticnetwork/terraform-polygon-supernets.git
 cd terraform-polygon-supernets
 ```
 
-2. Now we'll need to make sure our command like is capable of
-   executing AWS commands. To utilize AWS services, you need to set up
-   your AWS credentials. There are two ways to set up these
-   credentials: using the AWS CLI or manually setting them up in your
-   AWS console. To learn more about setting up AWS credentials, check
+2. Now we'll need to make sure our command line is capable of
+   executing AWS commands. To utilize AWS services, you must set up
+   your AWS credentials. There are two methods to establish these
+   credentials: using the AWS CLI or manually configuring them in your
+   AWS console. For more information about setting up AWS credentials, check
    out the documentation provided by AWS
-   [here](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html). `aws
-   configure`, `aws configure sso`, or set appropriate variables in
-   `~/.aws/credentials` or in `~/.aws/config`. You can directly set
-   access keys like below.
+   [here](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html). 
+   
+   You can use `aws configure`, `aws configure sso`, or set appropriate variables in
+   `~/.aws/credentials` or in `~/.aws/config`. Alternatively, you can directly set
+   access keys as shown below.
 
 ```
 $ export AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
@@ -70,12 +71,12 @@ $ export AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
 $ export AWS_DEFAULT_REGION=us-west-2
 ```
 
-Note: The role of the AWS user should have permissions to create all
-of the resources provided in `/modules`.
+Note: Ensure that the AWS user role has the necessary permissions to create all
+resources listed in the `/modules` directory.
 
-It's worthwhile at this point to confirm that AWS CLI is authenticated
-properly. Try running this command `aws sts get-caller-identity`. If
-this works, you're probably set to move forward.
+Before proceeding, verify that your AWS CLI is properly authenticated.
+Execute the following command: `aws sts get-caller-identity`. 
+If the command runs successfully, you are ready to continue.
 
 
 3. There are a few environment variables that should be set before
@@ -89,9 +90,9 @@ source example.env
 set +a
 ```
 
-You can quickly double check that your environment variables have been
-set by running `env | grep -i tf_var` to double check that the
-environment variables match what you specified in `example.env`
+To verify that your environment variables have been
+set correctly, run the command `env | grep -i tf_var`.
+This will display the environment variables, allowing you to confirm they match the values specified in `example.env`.
 
 The full list of variables that can be configured are in
 [variables.tf](./variables.tf).
@@ -104,18 +105,18 @@ The full list of variables that can be configured are in
 terraform init
 ```
 
-5. Now we're going to plan and apply using Terraform. While working
-   iteratively on your supernet, you'll typically make changes to the
-   Terraform modules, then plan to see what changes will be made to
-   your infrastructure, and then finally apply if the plan looks good.
+5. Next, we're going to "plan" and "apply" using Terraform. While working
+   iteratively on your Supernet, you'll typically make changes to the
+   Terraform modules, preview the potential infrastructure modifications,
+   and then apply the changes if they meet your expectations.
 
 ```
 terraform plan
 terraform apply
 ```
 
-6. During the Terraform apply, a private key was generated to give you
-   access to your VMs. You'll need to shave that key using the
+6. While applying the Terraform configuration,  a private key was generated to grant you
+   access to your VMs. To save this key, use the
    following commands.
 
 ```
@@ -123,30 +124,29 @@ terraform output pk_ansible > ~/devnet_private.key
 chmod 600 ~/devnet_private.key
 ```
 
-At this point all of the AWS infrastructure needed to run a supernet
-should be deployed. This is a good time to login to your AWS Console
-and take a look.
+By now, of the necessary AWS infrastructure for operating a Supernet should be deployed.
+It's a good time to sign in to your AWS Console and examine the setup.
 
 ## Ansible Deployment Steps
 
 1. At this stage we'll be using Ansible to configure the VMs that we
-   just deployed with Terraform. First, Change working directory to
+   just deployed with Terraform. To begin, switch your working directory to the Ansible folder
    `ansible`.
 
 ```
 cd ansible
 ```
 
-2. The Ansible playbooks that we use have some external
-   dependencies. In order to retrieve those collections, you can run
+2. The Ansible playbooks that we use require certain external
+   dependencies. In order to retrieve these collections, you can run
    the following command:
 
 ```
 ansible-galaxy install -r requirements.yml
 ```
 
-3. If you've changed your region, company name, or deployment name,
-   you'll need to modify `inventory/aws_ec2.yml`
+3. In case you've altered your region, company name, or deployment name, remember to
+   modify the `inventory/aws_ec2.yml` file accordingly.
 
 ```
 regions:
@@ -156,35 +156,35 @@ filters:
   tag:BaseDN: "<YOUR_DEPLOYMENT_NAME>.edge.<YOUR_COMPANY>.private"
 ```
 
-4. The file `local-extra-vars.yml` has a bunch of values that are
-   commonly tweaked during supernet deployments. At the very least,
-   you'll probably need to change `clean_deploy_title` to match
-   whatever deployment name you used.
+4. The `local-extra-vars.yml` file contains a number of values that are
+   often adjusted during Supernet deployments. At the very least,
+   make sure to update the `clean_deploy_title` to match
+   the deployment name you used.
 
-   Some of the other values like `block_gas_limit` and `block_time`
-   are important for performance and are worth setting very carefully.
+   Other values like `block_gas_limit` and `block_time`
+   significantly impact performance and should be set with care.
 
-5. Check if your instances are available by running the following.
+5. To verify the availability of your instances, run the following command:
 
 ```
 ansible-inventory --graph
 ```
 
-This command will list a bunch of instances. It's important at this
-stage to make sure that your SSM and SSH are configured to be able to
-reach these instances based on their instance id. To test SSM, run a
-command like this:
+This command will list a bunch of instances. At this stage, it's important
+to ensure that your SSM and SSH configurations allow access
+to these instances based on their instance IDs. To test SSM,
+execute a command similar to the one below:
 
 ```
 aws ssm start-session --target [aws instance id]
 ```
 
 An example instance id is `i-0641e8ff5f2a31647`. When you run this
-command you should have shell access to your VM.
+command, you should have shell access to your VM.
 
 
-6. Now that we know we can access our VMs, we need to ensure the
-   instances are reachable by Ansible. Try running this command:
+6. Now that we've confirmed access to our VMs, we must verify that the instances are accessible by Ansible.
+   Attempt running this command:
 
 ```
 ansible --inventory inventory/aws_ec2.yml --extra-vars "@local-extra-vars.yml" all -m ping
@@ -196,8 +196,8 @@ ansible --inventory inventory/aws_ec2.yml --extra-vars "@local-extra-vars.yml" a
 ansible-playbook --inventory inventory/aws_ec2.yml --extra-vars "@local-extra-vars.yml" site.yml
 ```
 
-After this full playbook runs you should have a functional
-supernet. If you want to do some tests, you can get your public rpc
+After the **full playbook runs, you should have a functional
+Supernet**. If you want perform some tests, you can obtain your public RPC
 endpoint with the following command:
 
 ```
