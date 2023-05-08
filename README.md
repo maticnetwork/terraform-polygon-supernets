@@ -23,7 +23,7 @@ resources that will be deployed:
 
 - Dedicated VPC
 - 4 validator nodes (which are also boot nodes)
-- 1 Root Chain (L1) Node running geth
+- 1 rootchain (L1) node running Geth
 - Application Load Balancer used for exposing the `JSON-RPC` endpoint
 
 ![Architecture Diagram](architecture.png)
