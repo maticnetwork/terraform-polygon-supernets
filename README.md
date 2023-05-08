@@ -1,4 +1,4 @@
-# Polygon Supernets AWS Terraform
+# Polygon Supernets AWS Terraform Deployment
 
 Polygon Supernets is Polygon's solution to build and power dedicated
 app-chains. Supernets are powered by Polygon's cutting-edge EVM
