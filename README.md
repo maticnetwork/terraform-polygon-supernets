@@ -1,3 +1,6 @@
+This repository contains Terraform automation for deploying Polygon
+Supernet infrastructure on AWS.
+
 # Polygon Supernets AWS Terraform Deployment
 
 Polygon Supernets is Polygon's solution to build and power dedicated
@@ -17,9 +20,7 @@ Documentation](https://wiki.polygon.technology/docs/supernets/)**.
 
 ## Architecture Overview
 
-This is an automated Polygon Supernet blockchain infrastructure
-deployment for AWS cloud provider. High level overview of the
-resources that will be deployed:
+The following resources will be deployed using Terraform:
 
 - Dedicated VPC
 - 4 validator nodes (which are also bootnodes)
@@ -80,8 +81,8 @@ If the command runs successfully, you are ready to continue.
 
 
 3. There are a few environment variables that should be set before
-   provisioning the infrastructure. Edit `example.env` based on your
-   requirements and then run the commands below to set your local
+   provisioning the infrastructure. Customize `example.env` based on
+   your requirements and then run the commands below to set your local
    environment variables.
 
 ```
@@ -128,9 +129,10 @@ By now, of the necessary AWS infrastructure for operating a Supernet should be d
 It's a good time to sign in to your AWS Console and examine the setup.
 
 ## Ansible Deployment Steps
+At this stage we'll be using Ansible to configure the VMs that we just
+deployed with Terraform.
 
-1. At this stage we'll be using Ansible to configure the VMs that we
-   just deployed with Terraform. To begin, switch your working directory to the Ansible folder
+1. To begin, switch your working directory to the Ansible folder
    `ansible`.
 
 ```
