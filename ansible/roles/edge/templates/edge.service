@@ -15,9 +15,7 @@ ExecStart=polygon-edge server --data-dir {{ edge_home_dir }} \
     --jsonrpc 0.0.0.0:{{ edge_jsonrpc_port }} \
     --prometheus 127.0.0.1:{{ edge_prometheus_port }} \
     --max-slots 276480 \
-    {% if (not is_legacy_mode) %}
     --max-enqueued 276480 \
-    {% endif %}
     --log-level INFO \
     --block-gas-target {{ block_gas_limit }} \
     --num-block-confirmations 2 \

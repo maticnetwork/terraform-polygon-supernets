@@ -17,27 +17,12 @@
     make build
   changed_when: false
 
-- name: Show if current run is is legacy mode
-  ansible.builtin.debug:
-    msg: "is_legacy_mode: {{ is_legacy_mode }}"
-
-- name: Move polygon-edge (main) binary to /usr/local/bin
-  ansible.builtin.copy:
-    src: /opt/polygon-edge/main
-    dest: /usr/local/bin/polygon-edge
-    remote_src: true
-    mode: 0755
-  when: is_legacy_mode
-  notify:
-    - Restart Edge Service
-
 - name: Move polygon-edge binary to /usr/local/bin
   ansible.builtin.copy:
     src: /opt/polygon-edge/polygon-edge
     dest: /usr/local/bin/
     remote_src: true
     mode: 0755
-  when: not is_legacy_mode
   notify:
     - Restart Edge Service
 

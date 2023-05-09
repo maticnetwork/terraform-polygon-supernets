@@ -9,8 +9,9 @@ Wants=network-online.target
 [Service]
 ExecStart=geth --dev \
                --dev.period 2 \
+               --http.vhosts '*' \
     	       --http --http.addr 0.0.0.0 --http.api eth,net,web3,debug \
-        	   --ws --ws.addr 0.0.0.0
+               --ws --ws.addr 0.0.0.0
 
 WorkingDirectory=/var/lib/geth
 
