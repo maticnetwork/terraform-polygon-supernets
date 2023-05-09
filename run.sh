@@ -13,8 +13,6 @@ ssh-add ~/devnet_private.key
 ROOTCHAIN_RPC=$(terraform output -raw geth_private_ip)
 
 cd ansible
-### Set ansible vault password
-echo "viable decrease resist spoil loop vocal foot only become glass satisfy dog pull junior jaguar maple entry donate panel slow innocent try movie snake" > password.txt
 
 ### Run ansible to configure the nodes
 ansible --inventory inventory/aws_ec2.yml --vault-password-file=password.txt --extra-vars "@local-extra-vars.yml" all -m ping

@@ -13,7 +13,7 @@ variable "base_instance_type" {
 variable "company_name" {
   description = "The name of the company for this particular deployment"
   type        = string
-  default     = "polygon"
+  default     = "company"
 }
 
 variable "create_ssh_key" {
