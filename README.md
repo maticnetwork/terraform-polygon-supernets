@@ -129,6 +129,7 @@ By now, of the necessary AWS infrastructure for operating a Supernet should be d
 It's a good time to sign in to your AWS Console and examine the setup.
 
 ## Ansible Deployment Steps
+
 At this stage we'll be using Ansible to configure the VMs that we just
 deployed with Terraform.
 
@@ -157,6 +158,11 @@ regions:
 filters:
   tag:BaseDN: "<YOUR_DEPLOYMENT_NAME>.edge.<YOUR_COMPANY>.private"
 ```
+
+The ssh configuration used by Ansible assumes that your default
+profile will be configured for the same region where your VMs are
+deployed. You can run `aws configure get region` and confirm that the
+default matches your inventory location.
 
 4. The `local-extra-vars.yml` file contains a number of values that are
    often adjusted during Supernet deployments. At the very least,
