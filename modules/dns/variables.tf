@@ -8,6 +8,12 @@ variable "region" {
   type        = string
   default     = "us-west-2"
 }
+
+variable "deployment_name" {
+  description = "The unique name for this particular deployment"
+  type        = string
+}
+
 variable "fullnode_count" {
   description = "The number of full nodes that we're going to deploy"
   type        = number
@@ -39,4 +45,9 @@ variable "aws_lb_int_rpc_domain" {
 }
 variable "aws_lb_ext_rpc_geth_domain" {
   type = string
+}
+
+variable "route53_zone_id" {
+  description = "The ID for external DNS"
+  type        = string
 }
