@@ -12,7 +12,6 @@ edge_user: edge
 is_validator: false
 
 loadtest_account: "0x85da99c8a7c2c95964c8efd687e95e632fc533d6"
-rootchain_json_rpc: http://geth-001:8545
 
 edge_grpc_port: 10000
 edge_p2p_port: 10001
