@@ -10,24 +10,23 @@ geth_tag: v1.11.6
 go_tag: 1.19.9.linux-amd64
 
 # this is the amount of value that will be transfered on the rootchain to the deployer address and the validators
-# rootchain_validator_fund_amount: 100ether
-# rootchain_deployer_fund_amount: 10000000ether
-rootchain_deployer_fund_amount: 10ether
-rootchain_validator_fund_amount: 1ether
+rootchain_validator_fund_amount: 100ether
+rootchain_deployer_fund_amount: 10000000ether
+# rootchain_deployer_fund_amount: 10ether
+# rootchain_validator_fund_amount: 1ether
 
 
 
 # this is the rpc url that will be used for the root chain
-# rootchain_json_rpc: http://geth-001:8545
-rootchain_json_rpc: https://matic-mumbai.chainstacklabs.com
+rootchain_json_rpc: http://geth-001:8545
+# rootchain_json_rpc: https://matic-mumbai.chainstacklabs.com
 
 # When our l1 is geth with an unlocked account, we'll need to send
 # ether from the randomly created coinbase to our predetermined
 # account. Set this to true in order to fund. Set this to false if the
 # coinbase account is already funded
-
-# fund_rootchain_coinbase: true
-fund_rootchain_coinbase: false
+fund_rootchain_coinbase: true
+# fund_rootchain_coinbase: false
 
 # This account is just for testing purposes. Don't actually use it. If
 # the L1 is NOT an unlocked test account, then you'll need some wallet
