@@ -13,6 +13,20 @@ main() {
     polygon-edge polybft-secrets --data-dir {{ hostvars[item].tags["Name"] }} --json --insecure > {{ hostvars[item].tags["Name"] }}.json
 {% endif %}
 {% endfor %}
+
+{% if (enable_eip_1559) %}
+    apt update
+    curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
+    apt-get install -y nodejs
+
+    pushd /opt/polygon-edge/
+    make compile-core-contracts
+    cp -r /opt/polygon-edge/core-contracts /var/lib/bootstrap/core-contracts/
+    popd
+
+    BURN_CONTRACT_ADDRESS=0x0000000000000000000000000000000000000000
+{% endif %}
+
     polygon-edge genesis \
                  --consensus polybft \
                  {% for item in hostvars %}{% if (hostvars[item].tags.Role == "fullnode" or hostvars[item].tags.Role == "validator") %} --bootnode /dns4/{{ hostvars[item].tags["Name"] }}/tcp/{{ edge_p2p_port }}/p2p/$(cat {{ hostvars[item].tags["Name"] }}.json | jq -r '.[0].node_id') {% endif %}{% endfor %} \
@@ -21,7 +35,18 @@ main() {
                  --reward-wallet 0x0101010101010101010101010101010101010101:1000000000000000000000000000 \
                  --block-gas-limit {{ block_gas_limit }} --block-time {{ block_time }}s \
                  {% for item in hostvars %}{% if (hostvars[item].tags.Role == "validator") %} --validators /dns4/{{ hostvars[item].tags["Name"] }}/tcp/{{ edge_p2p_port }}/p2p/$(cat {{ hostvars[item].tags["Name"] }}.json | jq -r '.[0].node_id'):$(cat {{ hostvars[item].tags["Name"] }}.json | jq -r '.[0].address' | sed 's/^0x//'):$(cat {{ hostvars[item].tags["Name"] }}.json | jq -r '.[0].bls_pubkey') {% endif %}{% endfor %} \
-                 --epoch-size 10
+                 --epoch-size 10 \
+{% if (enable_eip_1559) %}
+                 --burn-contract 0:$BURN_CONTRACT_ADDRESS \
+{% endif %}
+                 --native-token-config {{ native_token_config }}
+
+{% if (enable_eip_1559) %}
+    # EIP-1559
+    BYTECODE=$(cat /var/lib/bootstrap/core-contracts/artifacts/contracts/child/EIP1559Burn.sol/EIP1559Burn.json | jq -r .deployedBytecode)
+    BALANCE="0x0"
+    cat genesis.json | jq --arg code "$BYTECODE" --arg balance "$BALANCE" --arg addr "$BURN_CONTRACT_ADDRESS" '.genesis.alloc += {($addr): {"code": $code, "balance": $balance}}' | jq . > genesis.json
+{% endif %}
 
     polycli wallet create --words 12 --language english | jq '.Addresses[0]' > rootchain-wallet.json
 
