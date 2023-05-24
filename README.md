@@ -1,7 +1,7 @@
 This repository contains Terraform automation for deploying Polygon
 Supernet infrastructure on AWS.
 
-# Polygon Supernets AWS Terraform Deployment
+# Polygon Supernets AWS Deployment using Terraform / Ansible
 
 Polygon Supernets is Polygon's solution to build and power dedicated
 app-chains. Supernets are powered by Polygon's cutting-edge EVM
@@ -116,7 +116,7 @@ terraform plan
 terraform apply
 ```
 
-6. While applying the Terraform configuration,  a private key was generated to grant you
+6. While applying the Terraform configuration, a private key was generated to grant you
    access to your VMs. To save this key, use the
    following commands.
 
@@ -125,7 +125,7 @@ terraform output pk_ansible > ~/devnet_private.key
 chmod 600 ~/devnet_private.key
 ```
 
-By now, of the necessary AWS infrastructure for operating a Supernet should be deployed.
+By now, the necessary AWS infrastructure for operating a Supernet should be deployed.
 It's a good time to sign in to your AWS Console and examine the setup.
 
 ## Ansible Deployment Steps
@@ -253,4 +253,40 @@ In the root directory, run `terraform destroy`
 
 <!-- Run `run.sh` -->
 
+<br>
 
+# Supernet Set Up
+
+- State Directory : `/var/lib/edge`
+- Bootstrap Directory (only present in validator-001): `/var/lib/bootstrap`
+## Bootstrapping Polygon Edge
+The Edge bootstrap script ([ansible/roles/edge/templates/bootstrap.sh](https://github.com/maticnetwork/terraform-polygon-supernets/blob/main/ansible/roles/edge/templates/bootstrap.sh)) uses the Edge CLI to prepare initiate a new chain with PolyBFT consensus and prepare the initial Supernet nodes. 
+
+## Running ansible after the first run
+### Run specific playbook
+The ansible playbook ([ansible/site.yml](https://github.com/maticnetwork/terraform-polygon-supernets/blob/main/ansible/site.yml)) file defines a playbook that configures the servers. It targets the hosts specified in [ansible/inventory/aws_ec2.yml](https://github.com/maticnetwork/terraform-polygon-supernets/blob/main/ansible/inventory/aws_ec2.yml). You will come across the need to run ansible for only specific steps. This can be done with running with tags. 
+
+For example, this command will only run the ansible steps with the tag `edge`.
+```
+ansible-playbook --inventory inventory/aws_ec2.yml --extra-vars "@local-extra-vars.yml" --tags edge site.yml
+```
+### State reset with same `genesis.json`
+To reset the state of the current network, you first need to 
+1. stop the `edge` process
+2. remove the state directory (specifically `blockchain` and `trie` directory)
+3. restart the `edge` process
+```
+ansible --inventory inventory/aws_ec2.yml --extra-vars "@local-extra-vars.yml" validator:fullnode -m shell -b -a 'systemctl stop edge; rm -rf /var/lib/edge/blockchain; rm -rf /var/lib/edge/trie; rm -rf /var/lib/edge/consensus/polybft; systemctl start edge''
+```
+### State reset with new `genesis.json`
+To reset the state of the current network, you first need to 
+1. stop the `edge` process
+2. remove the state directory and the bootstrap directory
+3. `polygon-edge` and `go` binaries are also removed to ensure clean install
+After this, you will need to run the full playbook again which will start the `edge` process again.
+```
+ansible --inventory inventory/aws_ec2.yml --extra-vars "@local-extra-vars.yml" validator:fullnode -m shell -b -a 'systemctl stop edge; rm -rf /var/lib/edge; rm -rf /var/lib/bootstrap; rm -rf /opt/polygon-edge; rm -rf /usr/local/go
+```
+## Checking logs on the server
+### Using Ansible
+``
