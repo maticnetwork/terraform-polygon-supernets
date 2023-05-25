@@ -256,77 +256,7 @@ In the root directory, run `terraform destroy`
 <br>
 
 # Supernet Set Up
-
-- State Directory : `/var/lib/edge`
-- Bootstrap Directory (only present in validator-001): `/var/lib/bootstrap`
-- `polygon-edge`: `/opt/polygon-edge`
-- `polygon-cli`: `/opt/polygon-cli`
-
-## Bootstrapping Polygon Edge
-The Edge bootstrap script ([ansible/roles/edge/templates/bootstrap.sh](https://github.com/maticnetwork/terraform-polygon-supernets/blob/main/ansible/roles/edge/templates/bootstrap.sh)) uses the Edge CLI to prepare initiate a new chain with PolyBFT consensus and prepare the initial Supernet nodes. 
-
-## Running ansible after the first run
-### Run specific playbook
-The ansible playbook ([ansible/site.yml](https://github.com/maticnetwork/terraform-polygon-supernets/blob/main/ansible/site.yml)) file defines a playbook that configures the servers. It targets the hosts specified in [ansible/inventory/aws_ec2.yml](https://github.com/maticnetwork/terraform-polygon-supernets/blob/main/ansible/inventory/aws_ec2.yml). You will come across the need to run ansible for only specific steps. This can be done with running with tags. 
-
-For example, this command will only run the ansible steps with the tag `edge`.
-```
-ansible-playbook --inventory inventory/aws_ec2.yml --extra-vars "@local-extra-vars.yml" --tags edge site.yml
-```
-### Stop / Start / Restart the Polygon Edge Server
-Run the following on a server
-- `sudo systemctl stop edge`
-- `sudo systemctl start edge`
-- `sudo systemctl restart edge`
-
-or you can use ansible to run it on all servers
-```
-ansible --inventory inventory/aws_ec2.yml --extra-vars "@local-extra-vars.yml" validator:fullnode -m shell -b -a 'systemctl stop edge;'
-```
-### State reset with same `genesis.json`
-To reset the state of the current network
-1. stop the `edge` process
-2. remove the state directory (specifically `blockchain`, `consensus` and `trie` directory)
-3. restart the `edge` process
-```
-ansible --inventory inventory/aws_ec2.yml --extra-vars "@local-extra-vars.yml" validator:fullnode -m shell -b -a 'systemctl stop edge; rm -rf /var/lib/edge/blockchain; rm -rf /var/lib/edge/trie; rm -rf /var/lib/edge/consensus/polybft; systemctl start edge''
-```
-### State reset with new `genesis.json`
-To reset the state of the current network with a new `genesis.json`
-1. stop the `edge` process
-2. remove the state directory and the bootstrap directory
-3. `polygon-edge` and `go` binaries are also removed to ensure clean install
-4. run the entire playbook again
-
-After this, you will need to run the full playbook again which will start the `edge` process again.
-```
-ansible --inventory inventory/aws_ec2.yml --extra-vars "@local-extra-vars.yml" validator:fullnode -m shell -b -a 'systemctl stop edge; rm -rf /var/lib/edge/*; rm -rf /var/lib/bootstrap; rm -rf /opt/polygon-edge; rm -rf /usr/local/go"
-```
-## Checking logs on the server
-### On validator nodes or full nodes
-Run the following command on a specific server to check the systemd logs. If there is server setup issues, the error would most likely show up here. The actual log files are stored at `/var/log/journal/`.
-```
-sudo journalctl -u edge -f
-```
+Take a look at [Supernet Set Up](./supernet-setup.md)
 
 # Load Testing
-`polycli` assumes that the address `0x85dA99c8a7C2C95964c8EfD687E95E632Fc533D6` has been premined with
-enough value to do the load test. If you'd like to use a different key
-when generating the load, the argument ~--private-key~ can be used to
-specify another private key for running the load test.
-```
-# Send EOA transactions
-polycli loadtest --chain-id 100 --verbosity 700 --mode t --concurrency 250 --requests 120 --rate-limit 1900 --to-random=false --summarize=true http://127.0.0.1:10222
-
-# Send ERC 20 transfers
-polycli loadtest --chain-id 100 --verbosity 700 --mode 2 --concurrency 250 --requests 200 --rate-limit 700 --to-random=false --summarize=true --send-amount 0x1 http://127.0.0.1:10222
-
-# Send ERC 721 transfers
-polycli loadtest --chain-id 100 --verbosity 700 --mode 7 --concurrency 250 --requests 120 --rate-limit 700 --to-random=false --summarize=true http://127.0.0.1:10222
-```
-At the end of each test a line will be printed like this:
-```
-11:32PM INF rough test summary (ignores errors) firstBlockTime=2023-03-15T23:32:25Z lastBlockTime=2023-03-15T23:32:46Z testDuration=21 tps=476.1904761904762 transactionCount=10000
-```
-This will give a sense of how long the process took and how many transactions per second were observed. It can be useful to observe the details of each block. The command `polycli monitor http://127.0.0.1:10222` can be used to
-observe the blocks as their mined to look for any irregularities or unexpected behaviors in block production.
+Take a look at [Load Testing](./loadtesting.md)
