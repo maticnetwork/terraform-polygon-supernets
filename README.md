@@ -285,7 +285,7 @@ ansible --inventory inventory/aws_ec2.yml --extra-vars "@local-extra-vars.yml" v
 ### State reset with same `genesis.json`
 To reset the state of the current network
 1. stop the `edge` process
-2. remove the state directory (specifically `blockchain` and `trie` directory)
+2. remove the state directory (specifically `blockchain`, `consensus` and `trie` directory)
 3. restart the `edge` process
 ```
 ansible --inventory inventory/aws_ec2.yml --extra-vars "@local-extra-vars.yml" validator:fullnode -m shell -b -a 'systemctl stop edge; rm -rf /var/lib/edge/blockchain; rm -rf /var/lib/edge/trie; rm -rf /var/lib/edge/consensus/polybft; systemctl start edge''
@@ -299,7 +299,7 @@ To reset the state of the current network with a new `genesis.json`
 
 After this, you will need to run the full playbook again which will start the `edge` process again.
 ```
-ansible --inventory inventory/aws_ec2.yml --extra-vars "@local-extra-vars.yml" validator:fullnode -m shell -b -a 'systemctl stop edge; rm -rf /var/lib/edge; rm -rf /var/lib/bootstrap; rm -rf /opt/polygon-edge; rm -rf /usr/local/go
+ansible --inventory inventory/aws_ec2.yml --extra-vars "@local-extra-vars.yml" validator:fullnode -m shell -b -a 'systemctl stop edge; rm -rf /var/lib/edge/*; rm -rf /var/lib/bootstrap; rm -rf /opt/polygon-edge; rm -rf /usr/local/go"
 ```
 ## Checking logs on the server
 ### On validator nodes or full nodes
