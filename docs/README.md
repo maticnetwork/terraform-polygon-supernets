@@ -1,7 +1,7 @@
 This repository contains Terraform automation for deploying Polygon
 Supernet infrastructure on AWS.
 
-# Polygon Supernets AWS Terraform Deployment
+# Polygon Supernets AWS Deployment using Terraform / Ansible
 
 Polygon Supernets is Polygon's solution to build and power dedicated
 app-chains. Supernets are powered by Polygon's cutting-edge EVM
@@ -116,7 +116,7 @@ terraform plan
 terraform apply
 ```
 
-6. While applying the Terraform configuration,  a private key was generated to grant you
+6. While applying the Terraform configuration, a private key was generated to grant you
    access to your VMs. To save this key, use the
    following commands.
 
@@ -125,7 +125,7 @@ terraform output pk_ansible > ~/devnet_private.key
 chmod 600 ~/devnet_private.key
 ```
 
-By now, of the necessary AWS infrastructure for operating a Supernet should be deployed.
+By now, the necessary AWS infrastructure for operating a Supernet should be deployed.
 It's a good time to sign in to your AWS Console and examine the setup.
 
 ## Ansible Deployment Steps
@@ -253,4 +253,10 @@ In the root directory, run `terraform destroy`
 
 <!-- Run `run.sh` -->
 
+<br>
 
+# Supernet Set Up
+Take a look at [Supernet Set Up](./supernet-setup.md)
+
+# Load Testing
+Take a look at [Load Testing](./loadtesting.md)

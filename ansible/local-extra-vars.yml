@@ -4,6 +4,7 @@ clean_deploy_title: devnet13
 block_gas_limit: 50_000_000
 block_time: 5
 
+# https://github.com/maticnetwork/polygon-cli/releases
 polycli_tag: 0.1.22
 edge_tag: v0.9.0
 geth_tag: v1.11.6
