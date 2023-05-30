@@ -8,6 +8,7 @@ resource "aws_route53_zone" "private_zone" {
     vpc_region = var.region
   }
 }
+
 resource "aws_route53_zone" "reverse_zone" {
   name          = "in-addr.arpa"
   force_destroy = true
@@ -16,7 +17,6 @@ resource "aws_route53_zone" "reverse_zone" {
     vpc_region = var.region
   }
 }
-
 
 resource "aws_route53_record" "validator_private" {
   count   = var.validator_count
@@ -33,6 +33,22 @@ resource "aws_route53_record" "validator_private_reverse" {
   type    = "PTR"
   ttl     = "60"
   name    = join(".", reverse(split(".", element(var.validator_private_ips, count.index))))
+}
+resource "aws_route53_record" "non_validator_private" {
+  count   = var.non_validator_count
+  zone_id = aws_route53_zone.private_zone.zone_id
+  name    = format("non-validator-%03d.%s", count.index + 1, var.base_dn)
+  type    = "A"
+  ttl     = "60"
+  records = [element(var.non_validator_private_ips, count.index)]
+}
+resource "aws_route53_record" "non_validator_private_reverse" {
+  count   = var.non_validator_count
+  zone_id = aws_route53_zone.reverse_zone.zone_id
+  records = [format("non-validator-%03d.%s", count.index + 1, var.base_dn)]
+  type    = "PTR"
+  ttl     = "60"
+  name    = join(".", reverse(split(".", element(var.non_validator_private_ips, count.index))))
 }
 
 resource "aws_route53_record" "fullnode_private" {
@@ -91,7 +107,7 @@ data "aws_route53_zone" "ext_rpc" {
 }
 
 resource "aws_acm_certificate" "ext_rpc" {
-  count   = var.route53_zone_id == "" ? 0 : 1
+  count             = var.route53_zone_id == "" ? 0 : 1
   domain_name       = "${var.deployment_name}.${data.aws_route53_zone.ext_rpc[0].name}"
   validation_method = "DNS"
 
@@ -102,7 +118,7 @@ resource "aws_acm_certificate" "ext_rpc" {
 
 resource "aws_route53_record" "validation" {
   for_each = {
-    for dvo in (var.route53_zone_id == "" ? [] : aws_acm_certificate.ext_rpc[0].domain_validation_options) : dvo.domain_name => {
+    for dvo in(var.route53_zone_id == "" ? [] : aws_acm_certificate.ext_rpc[0].domain_validation_options) : dvo.domain_name => {
       name   = dvo.resource_record_name
       record = dvo.resource_record_value
       type   = dvo.resource_record_type
@@ -118,9 +134,7 @@ resource "aws_route53_record" "validation" {
 }
 
 resource "aws_acm_certificate_validation" "edge" {
-  count   = var.route53_zone_id == "" ? 0 : 1
+  count                   = var.route53_zone_id == "" ? 0 : 1
   certificate_arn         = aws_acm_certificate.ext_rpc[0].arn
   validation_record_fqdns = [for record in aws_route53_record.validation : record.fqdn]
 }
-
-

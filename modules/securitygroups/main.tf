@@ -32,8 +32,8 @@ resource "aws_security_group_rule" "all_node_instances" {
 }
 
 locals {
-  all_primary_network_interface_ids = concat(var.validator_primary_network_interface_ids, var.fullnode_primary_network_interface_ids, var.geth_primary_network_interface_ids)
-  p2p_primary_network_interface_ids = concat(var.validator_primary_network_interface_ids, var.fullnode_primary_network_interface_ids)
+  all_primary_network_interface_ids = concat(var.non_validator_primary_network_interface_ids, var.validator_primary_network_interface_ids, var.fullnode_primary_network_interface_ids, var.geth_primary_network_interface_ids)
+  p2p_primary_network_interface_ids = concat(var.non_validator_primary_network_interface_ids, var.validator_primary_network_interface_ids, var.fullnode_primary_network_interface_ids)
 }
 
 resource "aws_network_interface_sg_attachment" "all_node_instances" {

@@ -25,7 +25,7 @@ variable "create_ssh_key" {
 variable "deployment_name" {
   description = "The unique name for this particular deployment"
   type        = string
-  default     = "devnet01"
+  default     = "k1dev"
 }
 
 variable "devnet_key_value" {
@@ -89,7 +89,7 @@ variable "network_acl" {
 }
 
 variable "node_storage" {
-  description = "The size of the storage disk attached to full nodes and validators"
+  description = "The size of the storage disk attached to full nodes ,validators and non-validators "
   type        = number
   default     = 10
 }
@@ -130,8 +130,20 @@ variable "validator_count" {
   default     = 4
 }
 
+variable "non_validator_count" {
+  description = "The number of non-validators that we're going to deploy"
+  type        = number
+  default     = 1
+}
+
 variable "zones" {
   description = "The availability zones for deployment"
   type        = list(string)
-  default     = ["us-west-2a", "us-west-2b", "us-west-2c", "us-west-2d"]
+  default     = []
+}
+
+variable "base_ami" {
+  description = "The availability zones for deployment"
+  type        = string
+  default     = ""
 }

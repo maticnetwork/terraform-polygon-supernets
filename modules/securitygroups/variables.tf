@@ -24,6 +24,9 @@ variable "devnet_id" {
 variable "validator_primary_network_interface_ids" {
   type = list(string)
 }
+variable "non_validator_primary_network_interface_ids" {
+  type = list(string)
+}
 variable "fullnode_primary_network_interface_ids" {
   type = list(string)
 }

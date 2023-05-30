@@ -22,5 +22,13 @@ output "pk_ansible" {
 }
 
 output "geth_private_ip" {
-  value     = module.ec2.geth_private_ips[0]
+  value = module.ec2.geth_private_ips[0]
+}
+
+output "aws_availability_zones" {
+  value = local.default_zones
+}
+
+output "base_ami" {
+  value = local.base_ami
 }

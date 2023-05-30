@@ -1,48 +1,58 @@
 locals {
-  network_type = "edge"
-  base_ami     = "ami-0ecc74eca1d66d8a6"
-  base_dn      = format("%s.%s.%s.private", var.deployment_name, local.network_type, var.company_name)
-  base_id      = format("%s-%s", var.deployment_name, local.network_type)
+  network_type  = "edge"
+  base_ami      = length(var.base_ami) > 0 ? var.base_ami : data.aws_ami.available.id
+  base_dn       = format("%s.%s.%s.private", var.deployment_name, local.network_type, var.company_name)
+  base_id       = format("%s-%s", var.deployment_name, local.network_type)
+  default_zones = length(var.zones) > 0 ? var.zones : data.aws_availability_zones.available.names
 }
 
 terraform {
-  # backend "s3" {}
+  backend "s3" {
+    bucket         = "polygon-edge-k1dev-tf-states"
+    key            = "state/k1dev"
+    region         = "us-west-2"
+    dynamodb_table = "terraform_state"
+  }
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 4.61.0"
+      version = ">= 5.0.1"
     }
   }
   required_version = ">= 1.4.0"
 }
 
 module "dns" {
-  source          = "./modules/dns"
-  base_dn         = local.base_dn
-  region          = var.region
-  fullnode_count  = var.fullnode_count
-  validator_count = var.validator_count
-  geth_count      = var.geth_count
-  route53_zone_id = var.route53_zone_id
-  deployment_name = var.deployment_name
+  source              = "./modules/dns"
+  base_dn             = local.base_dn
+  region              = var.region
+  fullnode_count      = var.fullnode_count
+  validator_count     = var.validator_count
+  non_validator_count = var.non_validator_count
+  geth_count          = var.geth_count
+  route53_zone_id     = var.route53_zone_id
+  deployment_name     = var.deployment_name
 
   devnet_id                  = module.networking.devnet_id
   aws_lb_int_rpc_domain      = module.elb.aws_lb_int_rpc_domain
   aws_lb_ext_rpc_geth_domain = module.elb.aws_lb_ext_rpc_geth_domain
   validator_private_ips      = module.ec2.validator_private_ips
+  non_validator_private_ips  = module.ec2.non_validator_private_ips
   fullnode_private_ips       = module.ec2.fullnode_private_ips
   geth_private_ips           = module.ec2.geth_private_ips
 }
 
 module "ebs" {
-  source          = "./modules/ebs"
-  zones           = var.zones
-  node_storage    = var.node_storage
-  validator_count = var.validator_count
-  fullnode_count  = var.fullnode_count
+  source              = "./modules/ebs"
+  zones               = local.default_zones
+  node_storage        = var.node_storage
+  validator_count     = var.validator_count
+  non_validator_count = var.non_validator_count
+  fullnode_count      = var.fullnode_count
 
-  validator_instance_ids = module.ec2.validator_instance_ids
-  fullnode_instance_ids  = module.ec2.fullnode_instance_ids
+  validator_instance_ids     = module.ec2.validator_instance_ids
+  non_validator_instance_ids = module.ec2.non_validator_instance_ids
+  fullnode_instance_ids      = module.ec2.fullnode_instance_ids
 }
 
 module "ec2" {
@@ -53,6 +63,7 @@ module "ec2" {
   fullnode_count       = var.fullnode_count
   geth_count           = var.geth_count
   validator_count      = var.validator_count
+  non_validator_count  = var.non_validator_count
   base_devnet_key_name = format("%s_ssh_key", var.deployment_name)
   private_network_mode = var.private_network_mode
   network_type         = local.network_type
@@ -72,7 +83,7 @@ module "elb" {
   fullnode_count     = var.fullnode_count
   validator_count    = var.validator_count
   geth_count         = var.geth_count
-  route53_zone_id = var.route53_zone_id
+  route53_zone_id    = var.route53_zone_id
   base_id            = local.base_id
 
   devnet_private_subnet_ids   = module.networking.devnet_private_subnet_ids
@@ -92,7 +103,7 @@ module "networking" {
   devnet_vpc_block      = var.devnet_vpc_block
   devnet_public_subnet  = var.devnet_public_subnet
   devnet_private_subnet = var.devnet_private_subnet
-  zones                 = var.zones
+  zones                 = local.default_zones
 }
 
 module "securitygroups" {
@@ -106,11 +117,12 @@ module "securitygroups" {
   http_rpc_port      = var.http_rpc_port
   rootchain_rpc_port = var.rootchain_rpc_port
 
-  devnet_id                               = module.networking.devnet_id
-  validator_primary_network_interface_ids = module.ec2.validator_primary_network_interface_ids
-  fullnode_primary_network_interface_ids  = module.ec2.fullnode_primary_network_interface_ids
-  geth_primary_network_interface_ids      = module.ec2.geth_primary_network_interface_ids
-  geth_count                              = var.geth_count
+  devnet_id                                   = module.networking.devnet_id
+  validator_primary_network_interface_ids     = module.ec2.validator_primary_network_interface_ids
+  non_validator_primary_network_interface_ids = module.ec2.non_validator_primary_network_interface_ids
+  fullnode_primary_network_interface_ids      = module.ec2.fullnode_primary_network_interface_ids
+  geth_primary_network_interface_ids          = module.ec2.geth_primary_network_interface_ids
+  geth_count                                  = var.geth_count
 }
 
 module "ssm" {
@@ -121,7 +133,9 @@ module "ssm" {
 }
 
 provider "aws" {
-  region  = var.region
+  region                   = var.region
+  shared_credentials_files = ["~/.aws/credentials"]
+  profile                  = "k1-dev"
   default_tags {
     tags = {
       Environment    = var.environment

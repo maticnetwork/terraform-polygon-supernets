@@ -1,13 +1,22 @@
+### Set environment variable
+export AWS_SHARED_CREDENTIALS_FILE="~/.aws/credentials"
+export AWS_PROFILE=k1-dev 
+
+### Set environment variable
+set -a                                                                                                                   INT ✘  19:34:42 
+source k1dev.env
+set +a
+
 ### Creating resources with Terraform
 terraform init
 terraform plan
 terraform apply -auto-approve
 
 ### Output the private key for instances
-terraform output pk_ansible > ~/devnet_private.key
-chmod 600 ~/devnet_private.key 
+terraform output pk_ansible > ./devnet_private.key
+chmod 600 ./devnet_private.key 
 eval "$(ssh-agent)"
-ssh-add ~/devnet_private.key
+ssh-add ./devnet_private.key
 
 ### Save the rootchain rpc address
 ROOTCHAIN_RPC=$(terraform output -raw geth_private_ip)
