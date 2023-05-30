@@ -2,7 +2,7 @@
 
 `polycli` assumes that the address `0x85dA99c8a7C2C95964c8EfD687E95E632Fc533D6` has been premined with
 enough value to do the load test. If you'd like to use a different key
-when generating the load, the argument ~--private-key~ can be used to
+when generating the load, the argument `--private-key` can be used to
 specify another private key for running the load test.
 ```
 # Send EOA transactions
