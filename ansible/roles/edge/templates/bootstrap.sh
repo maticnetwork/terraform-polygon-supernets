@@ -90,7 +90,6 @@ main() {
                  --supernet-id $(cat genesis.json | jq -r '.params.engine.polybft.supernetID') \
                  --stake-manager $(cat genesis.json | jq -r '.params.engine.polybft.bridge.stakeManagerAddr') \
                  --stake-token $(cat genesis.json | jq -r '.params.engine.polybft.bridge.stakeTokenAddr') \
-                 --native-root-token $(cat genesis.json | jq -r '.params.engine.polybft.bridge.nativeERC20Address') \
                  --jsonrpc {{ rootchain_json_rpc }}
 {% endif %}
 {% endfor %}

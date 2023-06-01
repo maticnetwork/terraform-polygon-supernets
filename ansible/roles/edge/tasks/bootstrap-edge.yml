@@ -8,6 +8,13 @@
 
 - name: Execute bootstrap on the first validator
   ansible.builtin.command: "{{ edge_home_dir }}/init.sh"
+  register: bootstrap_output
+  when: hostvars[inventory_hostname].tags["Hostname"] == "validator-001"
+
+- name: Write command output to file
+  ansible.builtin.copy:
+    dest: "{{ edge_home_dir }}/bootstrap_output.txt"
+    content: "{{ bootstrap_output.stdout }}\n{{ bootstrap_output.stderr }}"
   when: hostvars[inventory_hostname].tags["Hostname"] == "validator-001"
 
 - name: Copy the bootstrap data to local
