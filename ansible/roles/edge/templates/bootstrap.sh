@@ -72,14 +72,14 @@ main() {
                  --private-key $(cat rootchain-wallet.json | jq -r '.HexPrivateKey') \
                  --addresses $(cat validator-*.json | jq -r ".[].address" | tr "\n" ",") \
                  --supernet-manager $(cat genesis.json | jq -r '.params.engine.polybft.bridge.customSupernetManagerAddr') \
-                 --json-rpc {{ rootchain_json_rpc }}
+                 --jsonrpc {{ rootchain_json_rpc }}
 
 
 {% for item in hostvars %}
 {% if (hostvars[item].tags.Role == "validator") %}
     polygon-edge polybft register-validator --data-dir {{ hostvars[item].tags["Name"] }} \
                  --supernet-manager $(cat genesis.json | jq -r '.params.engine.polybft.bridge.customSupernetManagerAddr') \
-                 --json-rpc {{ rootchain_json_rpc }}
+                 --jsonrpc {{ rootchain_json_rpc }}
 {% endif %}
 {% endfor %}
 
@@ -89,15 +89,16 @@ main() {
                  --amount 10 \
                  --stake-manager $(cat genesis.json | jq -r '.params.engine.polybft.bridge.stakeManagerAddr') \
                  --native-root-token $(cat genesis.json | jq -r '.params.engine.polybft.bridge.nativeERC20Address') \
-                 --json-rpc {{ rootchain_json_rpc }}
+                 --jsonrpc {{ rootchain_json_rpc }}
 {% endif %}
 {% endfor %}
 
     polygon-edge polybft supernet --private-key $(cat rootchain-wallet.json | jq -r '.HexPrivateKey') \
                  --supernet-manager $(cat genesis.json | jq -r '.params.engine.polybft.bridge.customSupernetManagerAddr') \
                  --stake-manager $(cat genesis.json | jq -r '.params.engine.polybft.bridge.stakeManagerAddr') \
-                 --finalize-genesis --enable-staking \
-                 --json-rpc {{ rootchain_json_rpc }}
+                 --finalize-genesis-set \
+                 --enable-staking \
+                 --jsonrpc {{ rootchain_json_rpc }}
 
     tar czf {{ base_dn }}.tar.gz *.json *.private
     popd
