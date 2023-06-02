@@ -68,8 +68,13 @@ main() {
 
 {% for item in hostvars %}
 {% if (hostvars[item].tags.Role == "validator") %}
-    cast send --rpc-url {{ rootchain_json_rpc }} --from $(cat rootchain-wallet.json | jq -r '.ETHAddress') --private-key $(cat rootchain-wallet.json | jq -r '.HexPrivateKey') \
-         --value {{ rootchain_validator_fund_amount }} $(cat {{ hostvars[item].tags["Name"] }}.json | jq -r '.[0].address')
+    polygon-edge rootchain fund \
+                --stake-token $(cat genesis.json | jq -r '.params.engine.polybft.bridge.stakeTokenAddr') \
+                --mint \
+                --addresses $(cat {{ hostvars[item].tags["Name"] }}.json | jq -r '.[0].address') \
+                --amounts 1000000000000000000000000 \
+                --json-rpc {{ rootchain_json_rpc }} \
+                --private-key $(cat rootchain-wallet.json | jq -r '.HexPrivateKey')
 {% endif %}
 {% endfor %}
 
