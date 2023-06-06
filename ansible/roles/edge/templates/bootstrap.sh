@@ -14,7 +14,6 @@ main() {
 {% endif %}
 {% endfor %}
 
-{% if (enable_eip_1559) %}
     apt update
     curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
     apt-get install -y nodejs
@@ -23,7 +22,6 @@ main() {
     make compile-core-contracts
     cp -r /opt/polygon-edge/core-contracts /var/lib/bootstrap/core-contracts/
     popd
-{% endif %}
 
     BURN_CONTRACT_ADDRESS=0x0000000000000000000000000000000000000000
     BALANCE=0x0
