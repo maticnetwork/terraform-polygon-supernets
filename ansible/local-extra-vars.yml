@@ -4,6 +4,8 @@ clean_deploy_title: devnet13
 block_gas_limit: 50_000_000
 block_time: 5
 
+chain_id: 100
+
 # https://github.com/maticnetwork/polygon-cli/releases
 polycli_tag: 0.1.22
 edge_tag: v1.0.0-rc1
@@ -15,8 +17,6 @@ rootchain_validator_fund_amount: 100ether
 rootchain_deployer_fund_amount: 10000000ether
 # rootchain_deployer_fund_amount: 10ether
 # rootchain_validator_fund_amount: 1ether
-
-
 
 # this is the rpc url that will be used for the root chain
 rootchain_json_rpc: http://geth-001:8545
