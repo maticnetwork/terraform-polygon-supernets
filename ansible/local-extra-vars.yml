@@ -36,7 +36,7 @@ rootchain_coinbase_address: "0xC7FDEe289150041f2c4AAEF095e8a6715223663C"
 rootchain_coinbase_private_key: "0xc0ffec0ffec0ffec0ffec0ffec0ffec0ffec0ffec0ffec0ffec0ffec0ffeDEAD"
 
 # The flag to enable EIP-1559
-enable_eip_1559: true
+enable_eip_1559: false
 
 # The flag for your custom native token config
 native_token_config: MyToken:MTK:18:true # configuration of native token in format <name:symbol:decimals count:mintable flag>
