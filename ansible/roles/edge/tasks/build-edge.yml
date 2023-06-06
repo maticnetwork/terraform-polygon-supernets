@@ -14,7 +14,7 @@
 - name: "Build polygon-edge from commit {{ edge_tag }}"
   ansible.builtin.shell: |
     cd /opt/polygon-edge
-    make build
+    go build -o polygon-edge .
   changed_when: false
 
 - name: Move polygon-edge binary to /usr/local/bin
