@@ -60,7 +60,7 @@ main() {
     polygon-edge polybft stake-manager-deploy \
         --jsonrpc {{ rootchain_json_rpc }} \
         --test
-    
+
     #    --private-key $(cat rootchain-wallet.json | jq -r '.HexPrivateKey')
 
     polygon-edge rootchain deploy \
@@ -77,9 +77,9 @@ main() {
                 --addresses $(cat validator-*.json | jq -r ".[].address" | paste -sd "," - | tr -d '\n') \
                 --amounts $(for f in validator-*.json; do echo -n "1000000000000000000000000,"; done | sed 's/,$//') \
                 --json-rpc {{ rootchain_json_rpc }}
-                
+
     #            --private-key $(cat rootchain-wallet.json | jq -r '.HexPrivateKey')
- 
+
      polygon-edge polybft whitelist-validators \
                   --private-key aa75e9a7d427efc732f8e4f1a5b7646adcc61fd5bae40f80d13c8419c9f43d6d \
                   --addresses $(cat validator-*.json | jq -r ".[].address" | paste -sd "," - | tr -d '\n') \
