@@ -4,9 +4,11 @@ clean_deploy_title: devnet13
 block_gas_limit: 50_000_000
 block_time: 5
 
+chain_id: 100
+
 # https://github.com/maticnetwork/polygon-cli/releases
 polycli_tag: 0.1.22
-edge_tag: v0.9.0
+edge_tag: v1.0.0-rc1
 geth_tag: v1.11.6
 go_tag: 1.19.9.linux-amd64
 
@@ -15,8 +17,6 @@ rootchain_validator_fund_amount: 100ether
 rootchain_deployer_fund_amount: 10000000ether
 # rootchain_deployer_fund_amount: 10ether
 # rootchain_validator_fund_amount: 1ether
-
-
 
 # this is the rpc url that will be used for the root chain
 rootchain_json_rpc: http://geth-001:8545
@@ -39,7 +39,7 @@ rootchain_coinbase_private_key: "0xc0ffec0ffec0ffec0ffec0ffec0ffec0ffec0ffec0ffe
 enable_eip_1559: false
 
 # The flag for your custom native token config
-native_token_config: MyToken:MTK:18 # configuration of native token in format <name:symbol:decimals count:mintable flag>
+native_token_config: MyToken:MTK:18:true # configuration of native token in format <name:symbol:decimals count:mintable flag>
 
 ansible_ssh_private_key_file: ~/devnet_private.key
 ansible_ssh_common_args: >
