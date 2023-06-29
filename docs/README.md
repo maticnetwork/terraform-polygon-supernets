@@ -164,7 +164,7 @@ profile will be configured for the same region where your VMs are
 deployed. You can run `aws configure get region` and confirm that the
 default matches your inventory location.
 
-4. The `local-extra-vars.yml` file contains a number of values that are
+4. The `group_vars/all.yml` file contains a number of values that are
    often adjusted during Supernet deployments. At the very least,
    make sure to update the `clean_deploy_title` to match
    the deployment name you used.

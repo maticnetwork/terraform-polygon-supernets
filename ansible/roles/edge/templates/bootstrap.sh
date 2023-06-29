@@ -33,22 +33,15 @@ main() {
                  {% for item in hostvars %}{% if (hostvars[item].tags.Role == "fullnode" or hostvars[item].tags.Role == "validator") %} --premine $(cat {{ hostvars[item].tags["Name"] }}.json | jq -r '.[0].address'):1000000000000000000000000 {% endif %}{% endfor %} \
                  --premine {{ loadtest_account }}:1000000000000000000000000000 \
                  --premine $BURN_CONTRACT_ADDRESS \
+{% if (enable_eip_1559) %}
                  --burn-contract 0:$BURN_CONTRACT_ADDRESS \
+{% endif %}
                  --reward-wallet 0x0101010101010101010101010101010101010101:1000000000000000000000000000 \
                  --block-gas-limit {{ block_gas_limit }} \
                  --block-time {{ block_time }}s \
                  {% for item in hostvars %}{% if (hostvars[item].tags.Role == "validator") %} --validators /dns4/{{ hostvars[item].tags["Name"] }}/tcp/{{ edge_p2p_port }}/p2p/$(cat {{ hostvars[item].tags["Name"] }}.json | jq -r '.[0].node_id'):$(cat {{ hostvars[item].tags["Name"] }}.json | jq -r '.[0].address' | sed 's/^0x//'):$(cat {{ hostvars[item].tags["Name"] }}.json | jq -r '.[0].bls_pubkey') {% endif %}{% endfor %} \
                  --epoch-size 10 \
                  --native-token-config {{ native_token_config }}
-
-{% if (enable_eip_1559) %}
-    # EIP-1559
-    jq --argjson code $(cat /var/lib/bootstrap/core-contracts/artifacts/contracts/child/EIP1559Burn.sol/EIP1559Burn.json | jq '.deployedBytecode')  \
-       --arg balance "$BALANCE" \
-       --arg addr "$BURN_CONTRACT_ADDRESS" \
-       '.genesis.alloc += {($addr): {"code": $code, "balance": $balance}}' \
-       genesis.json | jq . > tmp.json && mv tmp.json genesis.json
-{% endif %}
 
     polycli wallet create --words 12 --language english | jq '.Addresses[0]' > rootchain-wallet.json
 
