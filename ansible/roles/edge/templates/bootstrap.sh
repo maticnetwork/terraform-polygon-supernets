@@ -26,6 +26,13 @@ main() {
     BURN_CONTRACT_ADDRESS=0x0000000000000000000000000000000000000000
     BALANCE=0x0
 
+    polycli wallet create --words 12 --language english | jq '.Addresses[0]' > rootchain-wallet.json
+
+    # Should the deployer be funded from an unlocked L1 chain or from a prefunded account on L1
+    {% if (not fund_rootchain_coinbase) %}# {% endif %}COINBASE_ADDRESS=$(cast rpc --rpc-url {{ rootchain_json_rpc }} eth_coinbase | sed 's/"//g')
+    {% if (not fund_rootchain_coinbase) %}# {% endif %}cast send --rpc-url {{ rootchain_json_rpc }} --from $COINBASE_ADDRESS --value {{ rootchain_deployer_fund_amount }} $(cat rootchain-wallet.json | jq -r '.ETHAddress') --unlocked
+    {% if (fund_rootchain_coinbase) %}# {% endif %}cast send --rpc-url {{ rootchain_json_rpc }} --from {{ rootchain_coinbase_address }} --value {{ rootchain_deployer_fund_amount }} $(cat rootchain-wallet.json | jq -r '.ETHAddress') --private-key {{ rootchain_coinbase_private_key }}
+
     polygon-edge genesis \
                  --consensus polybft \
                  --chain-id {{ chain_id }} \
@@ -42,14 +49,6 @@ main() {
                  {% for item in hostvars %}{% if (hostvars[item].tags.Role == "validator") %} --validators /dns4/{{ hostvars[item].tags["Name"] }}/tcp/{{ edge_p2p_port }}/p2p/$(cat {{ hostvars[item].tags["Name"] }}.json | jq -r '.[0].node_id'):$(cat {{ hostvars[item].tags["Name"] }}.json | jq -r '.[0].address' | sed 's/^0x//'):$(cat {{ hostvars[item].tags["Name"] }}.json | jq -r '.[0].bls_pubkey') {% endif %}{% endfor %} \
                  --epoch-size 10 \
                  --native-token-config {{ native_token_config }}:$(cat rootchain-wallet.json | jq -r '.ETHAddress')
-
-    polycli wallet create --words 12 --language english | jq '.Addresses[0]' > rootchain-wallet.json
-
-    # Should the deployer be funded from an unlocked L1 chain or from a prefunded account on L1
-    {% if (not fund_rootchain_coinbase) %}# {% endif %}COINBASE_ADDRESS=$(cast rpc --rpc-url {{ rootchain_json_rpc }} eth_coinbase | sed 's/"//g')
-    {% if (not fund_rootchain_coinbase) %}# {% endif %}cast send --rpc-url {{ rootchain_json_rpc }} --from $COINBASE_ADDRESS --value {{ rootchain_deployer_fund_amount }} $(cat rootchain-wallet.json | jq -r '.ETHAddress') --unlocked
-    {% if (fund_rootchain_coinbase) %}# {% endif %}cast send --rpc-url {{ rootchain_json_rpc }} --from {{ rootchain_coinbase_address }} --value {{ rootchain_deployer_fund_amount }} $(cat rootchain-wallet.json | jq -r '.ETHAddress') --private-key {{ rootchain_coinbase_private_key }}
-
     polygon-edge polybft stake-manager-deploy \
         --jsonrpc {{ rootchain_json_rpc }} \
         --test
