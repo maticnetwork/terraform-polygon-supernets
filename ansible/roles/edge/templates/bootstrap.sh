@@ -41,7 +41,7 @@ main() {
                  --block-time {{ block_time }}s \
                  {% for item in hostvars %}{% if (hostvars[item].tags.Role == "validator") %} --validators /dns4/{{ hostvars[item].tags["Name"] }}/tcp/{{ edge_p2p_port }}/p2p/$(cat {{ hostvars[item].tags["Name"] }}.json | jq -r '.[0].node_id'):$(cat {{ hostvars[item].tags["Name"] }}.json | jq -r '.[0].address' | sed 's/^0x//'):$(cat {{ hostvars[item].tags["Name"] }}.json | jq -r '.[0].bls_pubkey') {% endif %}{% endfor %} \
                  --epoch-size 10 \
-                 --native-token-config {{ native_token_config }}
+                 --native-token-config {{ native_token_config }}:$(cat rootchain-wallet.json | jq -r '.ETHAddress')
 
     polycli wallet create --words 12 --language english | jq '.Addresses[0]' > rootchain-wallet.json
 
