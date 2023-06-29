@@ -16,7 +16,7 @@ The ansible playbook ([ansible/site.yml](https://github.com/maticnetwork/terrafo
 
 For example, this command will only run the ansible steps with the tag `edge`.
 ```
-ansible-playbook --inventory inventory/aws_ec2.yml --extra-vars "@local-extra-vars.yml" --tags edge site.yml
+ansible-playbook --tags edge site.yml
 ```
 ### Stop / Start / Restart the Polygon Edge Server
 Run the following on a server
@@ -26,7 +26,7 @@ Run the following on a server
 
 or you can use ansible to run it on all servers
 ```
-ansible --inventory inventory/aws_ec2.yml --extra-vars "@local-extra-vars.yml" validator:fullnode -m shell -b -a 'systemctl stop edge;'
+ansible validator:fullnode -m shell -b -a 'systemctl stop edge;'
 ```
 ### State reset with same `genesis.json` and secrets
 To reset the state of the current network
@@ -34,7 +34,7 @@ To reset the state of the current network
 2. remove the state directory (specifically `blockchain`, `consensus` and `trie` directory)
 3. restart the `edge` process
 ```
-ansible --inventory inventory/aws_ec2.yml --extra-vars "@local-extra-vars.yml" validator:fullnode -m shell -b -a 'systemctl stop edge; rm -rf /var/lib/edge/blockchain; rm -rf /var/lib/edge/trie; rm -rf /var/lib/edge/consensus/polybft; systemctl start edge''
+ansible validator:fullnode -m shell -b -a 'systemctl stop edge; rm -rf /var/lib/edge/blockchain; rm -rf /var/lib/edge/trie; rm -rf /var/lib/edge/consensus/polybft; systemctl start edge''
 ```
 ### State reset with new `genesis.json` and secrets
 To reset the state of the current network with a new `genesis.json`
@@ -45,7 +45,7 @@ To reset the state of the current network with a new `genesis.json`
 
 After this, you will need to run the full playbook again which will start the `edge` process again.
 ```
-ansible --inventory inventory/aws_ec2.yml --extra-vars "@local-extra-vars.yml" validator:fullnode -m shell -b -a 'systemctl stop edge; rm -rf /var/lib/edge/*; rm -rf /var/lib/bootstrap; rm -rf /opt/polygon-edge; rm -rf /usr/local/go"
+ansible validator:fullnode -m shell -b -a 'systemctl stop edge; rm -rf /var/lib/edge/*; rm -rf /var/lib/bootstrap; rm -rf /opt/polygon-edge; rm -rf /usr/local/go"
 ```
 ## Checking logs on the server
 ### On validator nodes or full nodes

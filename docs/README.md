@@ -195,13 +195,13 @@ command, you should have shell access to your VM.
    Attempt running this command:
 
 ```
-ansible --inventory inventory/aws_ec2.yml --extra-vars "@local-extra-vars.yml" all -m ping
+ansible all -m ping
 ```
 
 
 7. Run ansible playbook
 ```
-ansible-playbook --inventory inventory/aws_ec2.yml --extra-vars "@local-extra-vars.yml" site.yml
+ansible-playbook site.yml
 ```
 
 After the **full playbook runs, you should have a functional
