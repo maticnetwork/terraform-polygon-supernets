@@ -164,7 +164,7 @@ profile will be configured for the same region where your VMs are
 deployed. You can run `aws configure get region` and confirm that the
 default matches your inventory location.
 
-4. The `local-extra-vars.yml` file contains a number of values that are
+4. The `group_vars/all.yml` file contains a number of values that are
    often adjusted during Supernet deployments. At the very least,
    make sure to update the `clean_deploy_title` to match
    the deployment name you used.
@@ -195,13 +195,13 @@ command, you should have shell access to your VM.
    Attempt running this command:
 
 ```
-ansible --inventory inventory/aws_ec2.yml --extra-vars "@local-extra-vars.yml" all -m ping
+ansible all -m ping
 ```
 
 
 7. Run ansible playbook
 ```
-ansible-playbook --inventory inventory/aws_ec2.yml --extra-vars "@local-extra-vars.yml" site.yml
+ansible-playbook site.yml
 ```
 
 After the **full playbook runs, you should have a functional
