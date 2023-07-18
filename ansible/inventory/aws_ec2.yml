@@ -19,7 +19,7 @@ leading_separator: "no"
 cache: "yes"
 
 filters:
-  tag:BaseDN: "devnet01.edge.company.private"
+  tag:BaseDN: "devnet13.edge.company.private"
 
 hostnames:
   - instance-id
