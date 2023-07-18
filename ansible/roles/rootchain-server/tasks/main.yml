@@ -54,6 +54,53 @@
     remote_src: true
     mode: 0755
 
+- name: Create the clique genesis
+  ansible.builtin.template:
+    src: genesis.json
+    dest: /etc/geth/genesis.json
+    mode: "0640"
+
+- name: Setup geth
+  ansible.builtin.shell: |
+    polycli nodekey --ip $(hostname -I | head -n 1) > /etc/geth/nodekey.json
+    hostname | awk -F. '{print $1}' | sed 's/.*-0*//' > /etc/geth/host.index
+    polycli wallet inspect --addresses 20 --mnemonic "{{ geth_miner_mnemonic }}" | jq -r '.Addresses['$(cat /etc/geth/host.index)'-1]' > /etc/geth/polykey.json
+    cat /etc/geth/polykey.json | jq -r '.HexPrivateKey' | tr -d "\n" > /etc/geth/privkey
+    head -c 32 < /dev/urandom | polycli hash keccak256 | tr -d "\n" > /etc/geth/password
+    geth init --datadir /var/lib/geth /etc/geth/genesis.json
+    geth account import --password /etc/geth/password --keystore /var/lib/geth/keystore /etc/geth/privkey
+    cat /etc/geth/nodekey.json  | jq -r '.PrivateKey' | tr -d "\n" > /var/lib/geth/geth/nodekey
+    chown -R geth:geth-group /etc/geth
+    chown -R geth:geth-group /var/lib/geth
+  args:
+    executable: /bin/bash
+    creates: /var/lib/geth/keystore
+
+- name: Get ETH Address
+  ansible.builtin.shell: cat /etc/geth/polykey.json  | jq -r ".ETHAddress" | tr -d "\n"
+  register: derived_wallet_address
+  changed_when: false
+
+- name: Display eth address
+  ansible.builtin.debug:
+    msg: "{{ derived_wallet_address.stdout }}"
+
+- name: Get ENR
+  ansible.builtin.shell: cat /etc/geth/nodekey.json | jq -r '.ENR' | tr -d "\n"
+  register: root_enrs
+  changed_when: false
+
+- name: Display ENRS
+  ansible.builtin.set_fact:
+    rootchain_bootnodes: "{{ ansible_play_hosts | map('extract', hostvars, 'root_enrs') | map(attribute='stdout') | list }}"
+  run_once: true
+
+- name: Create the geth toml
+  ansible.builtin.template:
+    src: config.toml
+    dest: /etc/geth/config.toml
+    mode: "0644"
+
 - name: Create the geth systemd file
   ansible.builtin.template:
     src: geth.service

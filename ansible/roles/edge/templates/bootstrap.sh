@@ -23,7 +23,7 @@ main() {
     cp -r /opt/polygon-edge/core-contracts /var/lib/bootstrap/core-contracts/
     popd
 
-    BURN_CONTRACT_ADDRESS=0x0000000000000000000000000000000000000000
+    RESERVE_ADDRESS=0x0000000000000000000000000000000000000000
     BALANCE=0x0
 
     polycli wallet create --words 12 --language english | jq '.Addresses[0]' > rootchain-wallet.json
@@ -39,9 +39,9 @@ main() {
                  {% for item in hostvars %}{% if (hostvars[item].tags.Role == "fullnode" or hostvars[item].tags.Role == "validator") %} --bootnode /dns4/{{ hostvars[item].tags["Name"] }}/tcp/{{ edge_p2p_port }}/p2p/$(cat {{ hostvars[item].tags["Name"] }}.json | jq -r '.[0].node_id') {% endif %}{% endfor %} \
                  {% for item in hostvars %}{% if (hostvars[item].tags.Role == "fullnode" or hostvars[item].tags.Role == "validator") %} --premine $(cat {{ hostvars[item].tags["Name"] }}.json | jq -r '.[0].address'):1000000000000000000000000 {% endif %}{% endfor %} \
                  --premine {{ loadtest_account }}:1000000000000000000000000000 \
-                 --premine $BURN_CONTRACT_ADDRESS \
+                 --premine $RESERVE_ADDRESS \
 {% if (enable_eip_1559) %}
-                 --burn-contract 0:$BURN_CONTRACT_ADDRESS \
+                 --burn-contract 0:$RESERVE_ADDRESS \
 {% endif %}
                  --reward-wallet 0x0101010101010101010101010101010101010101:1000000000000000000000000000 \
                  --block-gas-limit {{ block_gas_limit }} \

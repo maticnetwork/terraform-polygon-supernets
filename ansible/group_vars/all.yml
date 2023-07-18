@@ -8,7 +8,8 @@ chain_id: 100
 
 # https://github.com/maticnetwork/polygon-cli/releases
 polycli_tag: 0.1.22
-edge_tag: v1.0.0
+# edge_tag: v1.0.1
+edge_tag: develop
 geth_tag: v1.11.6
 go_tag: 1.19.9.linux-amd64
 
