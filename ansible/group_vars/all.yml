@@ -8,10 +8,9 @@ chain_id: 100
 
 # https://github.com/maticnetwork/polygon-cli/releases
 polycli_tag: 0.1.22
-# edge_tag: v1.0.1
-edge_tag: develop
-geth_tag: v1.11.6
-go_tag: 1.19.9.linux-amd64
+edge_tag: v1.0.1
+geth_tag: v1.12.0
+go_tag: 1.19.10.linux-amd64
 
 # this is the amount of value that will be transfered on the rootchain to the deployer address and the validators
 rootchain_validator_fund_amount: 100ether
@@ -81,3 +80,8 @@ storage_device_name: nvme1n1
 storage_device_location: /dev/{{ storage_device_name }}
 storage_mount_point: "{{ edge_home_dir }}"
 storage_partition_name: State Data
+
+geth_http_port: 8545
+geth_miner_mnemonic: code code code code code code code code code code code quality
+geth_chain_id: 1001
+geth_p2p_port: 30303
