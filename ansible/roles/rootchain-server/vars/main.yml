@@ -1,0 +1,25 @@
+# These are the first 10 keys from our code11-quality key
+rootchain_signer_list:
+  - "85da99c8a7c2c95964c8efd687e95e632fc533d6"
+  - "125fb391ba829e0865963d3b91711610049a9e78"
+  - "964ec59d0e05db08440c822d7c588e63bbde8c4e"
+  - "62210af667d8c4b15ab07c88541b562426d41604"
+  - "010530c8066681d20412de14fbbfa21565956826"
+  - "6e5c0ac738e7fd20227a1ca9f8bcd802e109b471"
+  - "cfe521bdf015c7cad2da8766cdc242fcb28ef028"
+  - "fb68d6ec2636a5ee255e1d9401712409e2430d7b"
+  - "0d4e5491610a61ca674bd0e6cf57bedb43ccbdaf"
+  - "1fb6a1a46561a2dba2926754557fc67a1bd90d4c"
+  - "6aa64101baa3a6f1314913672e72da147c348f64"
+  - "4358db66011ddba2baa562d1c90ac0ba12353a88"
+  - "daf2e00ac44bee07092a65fa0386eb6026733f40"
+  - "b8f8fbed2df96a1f67b583227084554349d87984"
+  - "7083957d70a24ba98dad458c05ec0ab66f3cb7dd"
+  - "26275d1f45ad6050bcde044e7d396a2240f63e46"
+  - "53e73e598d2832ec86527d3a836cb16c85884827"
+  - "9fbdad4eec696ffd7fec52b036d16c926b71b4be"
+  - "acf4d941316677064b09354ac4aeae4d45cb828b"
+  - "6d5821d6d50108649480a63d6f337f8473d661ef"
+
+# The active signers are going to be limited to the number of rootchain nodes that we have
+active_signers: "{{ rootchain_signer_list[0 : groups['geth'] | length] | join('') }}"
