@@ -5,6 +5,10 @@
   tasks:
     - name: Gather facts
       ansible.builtin.gather_facts:
+      retries: 3
+      delay: 10
+      register: result
+      until: result is not failed
 
 - hosts: all
   become: true
