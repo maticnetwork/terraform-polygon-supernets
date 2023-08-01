@@ -72,7 +72,7 @@ module "elb" {
   fullnode_count     = var.fullnode_count
   validator_count    = var.validator_count
   geth_count         = var.geth_count
-  route53_zone_id = var.route53_zone_id
+  route53_zone_id    = var.route53_zone_id
   base_id            = local.base_id
 
   devnet_private_subnet_ids   = module.networking.devnet_private_subnet_ids
@@ -121,7 +121,7 @@ module "ssm" {
 }
 
 provider "aws" {
-  region  = var.region
+  region = var.region
   default_tags {
     tags = {
       Environment    = var.environment
