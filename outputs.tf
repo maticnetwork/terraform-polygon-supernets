@@ -22,5 +22,5 @@ output "pk_ansible" {
 }
 
 output "geth_private_ip" {
-  value     = module.ec2.geth_private_ips[0]
+  value = try(module.ec2.geth_private_ips[0], null)
 }

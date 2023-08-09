@@ -8,19 +8,28 @@ chain_id: 100
 
 # https://github.com/maticnetwork/polygon-cli/releases
 polycli_tag: 0.1.22
-edge_tag: v1.0.1
+edge_tag: develop
 geth_tag: v1.12.0
 go_tag: 1.19.10.linux-amd64
 
 # this is the amount of value that will be transfered on the rootchain to the deployer address and the validators
+rootchain_stake_token_fund_amount: 1000ether
 rootchain_validator_fund_amount: 100ether
 rootchain_deployer_fund_amount: 10000000ether
 # rootchain_deployer_fund_amount: 10ether
 # rootchain_validator_fund_amount: 1ether
+# rootchain_validator_convert_amount_ether: 0.1
+rootchain_validator_convert_amount_ether: 100
 
 # this is the rpc url that will be used for the root chain
 rootchain_json_rpc: http://geth-001:8545
+is_deploy_stake_token_erc20: true
+# rootchain_json_rpc: https://polygon-mumbai.g.alchemy.com/v2/xxx
 # rootchain_json_rpc: https://matic-mumbai.chainstacklabs.com
+
+# "stake_token_address" is only read when "is_stake_token_erc_20: true"
+stake_token_address: "0x5d732A66f1F2FB8A7A284AF5B35e043D1f0B0985"
+is_stake_token_erc_20: true
 
 # When our l1 is geth with an unlocked account, we'll need to send
 # ether from the randomly created coinbase to our predetermined
@@ -29,14 +38,13 @@ rootchain_json_rpc: http://geth-001:8545
 fund_rootchain_coinbase: true
 # fund_rootchain_coinbase: false
 
-# This account is just for testing purposes. Don't actually use it. If
-# the L1 is NOT an unlocked test account, then you'll need some wallet
+# If the L1 is NOT an unlocked test account, then you'll need some wallet
 # for funding validators. The address and private key here are used for this purpose
-rootchain_coinbase_address: "0xC7FDEe289150041f2c4AAEF095e8a6715223663C"
-rootchain_coinbase_private_key: "0xc0ffec0ffec0ffec0ffec0ffec0ffec0ffec0ffec0ffec0ffec0ffec0ffeDEAD"
+rootchain_coinbase_address: "0xREPLACE_WITH_ETH_ADDRESS"
+rootchain_coinbase_private_key: "REPLACE_WITH_PRIVATE_KEY"
 
 # The flag to enable EIP-1559
-enable_eip_1559: false
+enable_eip_1559: true
 
 # The flag for your custom native token config
 native_token_config: MyToken:MTK:18:true # configuration of native token in format <name:symbol:decimals count:mintable flag>

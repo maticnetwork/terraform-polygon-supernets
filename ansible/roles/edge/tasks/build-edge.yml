@@ -5,11 +5,23 @@
 - name: Clone polygon-edge repository
   ansible.builtin.git:
     repo: https://github.com/0xPolygon/polygon-edge.git
-    # repo: https://github.com/praetoriansentry/polygon-edge.git
     dest: /opt/polygon-edge
     version: "{{ edge_tag }}"
     recursive: true
     force: true
+
+# Temporary removal of flag limit
+- name: Remove flag limit in file
+  ansible.builtin.lineinfile:
+    path: /opt/polygon-edge/command/rootchain/supernet/stakemanager/stake_manager_deploy.go
+    state: absent
+    regexp: '^(\s*)cmd\.MarkFlagsMutuallyExclusive\(rootHelper\.TestModeFlag, polybftsecrets\.PrivateKeyFlag\)'
+
+- name: Remove block of code from file
+  ansible.builtin.replace:
+    path: /opt/polygon-edge/command/rootchain/supernet/stakemanager/stake_manager_deploy.go
+    regexp: '(?s)^(\s*)if params\.isTestMode {\n\s*// fund deployer so that he can deploy contracts\n\s*deployerAddr := deployerKey\.Address\(\)\n\s*txn := &ethgo\.Transaction{To: &deployerAddr, Value: ethgo\.Ether\(1\)}\n\n\s*if _, err = txRelayer\.SendTransactionLocal\(txn\); err != nil {\n\s*return fmt\.Errorf\("failed to send local transaction: %w", err\)\n\s*}\n\s*}'
+    replace: ''
 
 - name: "Build polygon-edge from commit {{ edge_tag }}"
   ansible.builtin.shell: |
