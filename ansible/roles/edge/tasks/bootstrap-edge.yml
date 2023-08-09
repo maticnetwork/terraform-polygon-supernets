@@ -12,35 +12,12 @@
     dest: "{{ edge_home_dir }}/rootchain-wallet.json"
     mode: 0700
 
-# - name: Execute bootstrap on the first validator
-#   ansible.builtin.shell: |
-#     {{ edge_home_dir }}/init.sh &> {{ edge_home_dir }}/bootstrap_output.txt
-#   when: hostvars[inventory_hostname].tags["Hostname"] == "validator-001"
-#   args:
-#     executable: /bin/bash
-
-- name: Produce package.json
-  ansible.builtin.template:
-    src: package.json
-    dest: "/var/lib/bootstrap/package.json"
-    mode: 0700
+- name: Execute bootstrap on the first validator
+  ansible.builtin.shell: |
+    {{ edge_home_dir }}/init.sh &> {{ edge_home_dir }}/bootstrap_output.txt
   when: hostvars[inventory_hostname].tags["Hostname"] == "validator-001"
-
-- name: Produce deploy and run script
-  ansible.builtin.template:
-    src: deploy-and-run.js
-    dest: "/var/lib/bootstrap/deploy-and-run.js"
-    mode: 0700
-  when: hostvars[inventory_hostname].tags["Hostname"] == "validator-001"
-
-# - name: Execute deploy and run script on the first validator
-#   ansible.builtin.shell: |
-#     cd /var/lib/bootstrap
-#     export PRIVATE_KEY=$(cat rootchain-wallet.json | jq -r '.HexPrivateKey')
-#     export NATIVE_ERC20_ADDR=$(cat genesis.json | jq -r '.params.engine.polybft.bridge.nativeERC20Address') 
-#     npm install
-#     node /var/lib/bootstrap/deploy-and-run.js > /var/lib/bootstrap/run-deploy-output.txt
-#   when: hostvars[inventory_hostname].tags["Hostname"] == "validator-001"
+  args:
+    executable: /bin/bash
 
 - name: Copy the bootstrap data to local
   block:

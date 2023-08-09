@@ -104,7 +104,7 @@ main() {
                   --jsonrpc {{ rootchain_json_rpc }}
 
 {% set conversion_rate = 10 ** 18 %}
-{% set rootchain_validator_convert_amount_wei = rootchain_validator_convert_amount_ether * conversion_rate %}
+{% set rootchain_validator_convert_amount_wei = (rootchain_validator_convert_amount_ether * conversion_rate) | int %}
 
     counter=1
 {% for item in hostvars %}
