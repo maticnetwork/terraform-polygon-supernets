@@ -31,8 +31,8 @@ main() {
     # Should the deployer be funded from an unlocked L1 chain or from a prefunded account on L1
     {% if (not fund_rootchain_coinbase) %}# {% endif %}COINBASE_ADDRESS=$(cast rpc --rpc-url {{ rootchain_json_rpc }} eth_coinbase | sed 's/"//g')
     {% if (not fund_rootchain_coinbase) %}# {% endif %}cast send --rpc-url {{ rootchain_json_rpc }} --from $COINBASE_ADDRESS --value {{ rootchain_deployer_fund_amount }} $(cat rootchain-wallet.json | jq -r '.ETHAddress') --unlocked
-    # {% if (fund_rootchain_coinbase) %}# {% endif %}cast send --rpc-url {{ rootchain_json_rpc }} --from {{ rootchain_coinbase_address }} --value {{ rootchain_deployer_fund_amount }} $(cat rootchain-wallet.json | jq -r '.ETHAddress') --private-key {{ rootchain_coinbase_private_key }}
-    {% if (fund_rootchain_coinbase) %}# {% endif %}mv ../edge/rootchain-wallet.json ./rootchain-wallet.json
+    {% if (fund_rootchain_coinbase) %}# {% endif %}cast send --rpc-url {{ rootchain_json_rpc }} --from {{ rootchain_coinbase_address }} --value {{ rootchain_deployer_fund_amount }} $(cat rootchain-wallet.json | jq -r '.ETHAddress') --private-key {{ rootchain_coinbase_private_key }}
+    # {% if (fund_rootchain_coinbase) %}# {% endif %}mv ../edge/rootchain-wallet.json ./rootchain-wallet.json
 
 {% if (is_deploy_stake_token_erc20) %}
     echo "Deploying MockERC20 (Stake Token) contract"
