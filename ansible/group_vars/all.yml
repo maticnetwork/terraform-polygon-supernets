@@ -4,7 +4,6 @@ clean_deploy_title: devnet13
 #### Genesis Flags ###
 block_gas_limit: 50_000_000
 block_time: 5
-
 chain_id: 100
 
 ### Version Flags ###
@@ -42,6 +41,7 @@ fund_rootchain_coinbase: true
 # for funding validators. The address and private key here are used for this purpose
 rootchain_coinbase_address: "0xREPLACE_WITH_ETH_ADDRESS"
 rootchain_coinbase_private_key: "REPLACE_WITH_PRIVATE_KEY"
+### ROOTCHAIN ###
 
 ### STAKE TOKEN ###
 # enter "stake_token_address" if you are using a pre-existing rootchain, and already have deployed a stake token contract
