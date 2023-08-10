@@ -1,0 +1,4 @@
+{
+    "HexPrivateKey": "{{ rootchain_coinbase_private_key }}",
+    "ETHAddress": "{{ rootchain_coinbase_address }}"
+  }
