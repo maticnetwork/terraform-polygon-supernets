@@ -260,3 +260,13 @@ Take a look at [Supernet Set Up](./supernet-setup.md)
 
 # Load Testing
 Take a look at [Load Testing](./loadtesting.md)
+
+# Testing Bridge Transactions
+Take a look at [Testing Bridge Transactions](./bridge-testing.md) for commands to send bridge transactions. By default, configurations are set up to point to the local geth as the rootchain. If you wish to customize the rootchain, you can change that in [group_vars/all.yml](../ansible/group_vars/all.yml). Notable variables that you may want to edit are the following
+* `rootchain_json_rpc`
+* `fund_rootchain_coinbase`
+* `rootchain_coinbase_address`
+* `rootchain_coinbase_private_key`
+* `is_stake_token_erc_20`
+* `is_deploy_stake_token_erc20`
+* `stake_token_address`
