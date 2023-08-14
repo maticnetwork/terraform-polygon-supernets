@@ -1,46 +1,61 @@
 ---
 clean_deploy_title: devnet13
 
+#### Genesis Flags ###
 block_gas_limit: 50_000_000
 block_time: 5
-
 chain_id: 100
 
-# https://github.com/maticnetwork/polygon-cli/releases
-polycli_tag: 0.1.22
-edge_tag: v1.0.1
+### Version Flags ###
+polycli_tag: 0.1.30 # https://github.com/maticnetwork/polygon-cli/releases
+edge_tag: 761bc2231156ffa1445eb85cbdefec1a87544f65 # this commit has improved logging from v1.1.0
 geth_tag: v1.12.0
 go_tag: 1.19.10.linux-amd64
 
-# this is the amount of value that will be transfered on the rootchain to the deployer address and the validators
-rootchain_validator_fund_amount: 100ether
+### FUNDING ACCOUNTS ###
+## this is the amount of value that will be transfered on the rootchain to the deployer address and the validators
+rootchain_stake_token_fund_amount: 1000ether
 rootchain_deployer_fund_amount: 10000000ether
+rootchain_validator_fund_amount: 100ether
+rootchain_validator_convert_amount_ether: 100
+## smaller values for rootchain (testnets)
+# rootchain_stake_token_fund_amount: 10ether
 # rootchain_deployer_fund_amount: 10ether
 # rootchain_validator_fund_amount: 1ether
+# rootchain_validator_convert_amount_ether: 0.1
 
-# this is the rpc url that will be used for the root chain
+### ROOTCHAIN ###
+## this is the rpc url that will be used for the root chain
 rootchain_json_rpc: http://geth-001:8545
+# rootchain_json_rpc: https://polygon-mumbai.g.alchemy.com/v2/xxx
 # rootchain_json_rpc: https://matic-mumbai.chainstacklabs.com
 
-# When our l1 is geth with an unlocked account, we'll need to send
+## When our l1 is geth with an unlocked account, we'll need to send
 # ether from the randomly created coinbase to our predetermined
 # account. Set this to true in order to fund. Set this to false if the
 # coinbase account is already funded
 fund_rootchain_coinbase: true
 # fund_rootchain_coinbase: false
 
-# This account is just for testing purposes. Don't actually use it. If
-# the L1 is NOT an unlocked test account, then you'll need some wallet
+## If the L1 is NOT an unlocked test account, then you'll need some wallet
 # for funding validators. The address and private key here are used for this purpose
-rootchain_coinbase_address: "0xC7FDEe289150041f2c4AAEF095e8a6715223663C"
-rootchain_coinbase_private_key: "0xc0ffec0ffec0ffec0ffec0ffec0ffec0ffec0ffec0ffec0ffec0ffec0ffeDEAD"
+rootchain_coinbase_address: "0xREPLACE_WITH_ETH_ADDRESS"
+rootchain_coinbase_private_key: "REPLACE_WITH_PRIVATE_KEY"
+### ROOTCHAIN ###
 
-# The flag to enable EIP-1559
-enable_eip_1559: false
+### STAKE TOKEN ###
+# enter "stake_token_address" if you are using a pre-existing rootchain, and already have deployed a stake token contract
+# "stake_token_address" is only read when "is_deploy_stake_token_erc20: true"
+stake_token_address: "0x5d732A66f1F2FB8A7A284AF5B35e043D1f0B0985"
+is_stake_token_erc_20: true
+is_deploy_stake_token_erc20: true
 
-# The flag for your custom native token config
+### NATIVE TOKEN ###
+## mintable=false: non child-chain mintable native token: Supernets native token is configured to be the child token of already existing token on the rootchain, meaning that its supply originates from bridging the rootchain token
+## mintable=true: child chain mintable native token: its supply is managed straight on the Supernets, without bridging some existing rootchain token
 native_token_config: MyToken:MTK:18:true # configuration of native token in format <name:symbol:decimals count:mintable flag>
 
+### Infra/Ansible Flags ###
 ansible_ssh_private_key_file: ~/devnet_private.key
 ansible_ssh_common_args: >
   -o IdentitiesOnly=yes
@@ -50,37 +65,35 @@ ansible_user: ubuntu
 ansible_become: true
 ansible_ssh_retries: 5
 
-
 deployment_name: "{{ clean_deploy_title }}"
 base_dn: "{{ deployment_name }}.edge.polygon.private"
-
 node_name: "{{ hostvars[inventory_hostname].tags.Hostname }}"
 edge_domain: "{{ base_dn }}"
 node_hostname: "{{ node_name }}.{{ edge_domain }}"
 
-edge_home_dir: /var/lib/edge
-edge_user: edge
-
-is_validator: false
-
-loadtest_account: "0x85da99c8a7c2c95964c8efd687e95e632fc533d6"
-
+### Edge Flags ###
 edge_grpc_port: 10000
 edge_p2p_port: 10001
 edge_jsonrpc_port: 10002
-
 edge_prometheus_port: 9091
 node_exporter_port: 9092
 node_exporter_web_listen_address: 127.0.0.1:{{ node_exporter_port }}
-
 haproxy_port: 10222
+edge_home_dir: /var/lib/edge
+edge_user: edge
+loadtest_account: "0x85da99c8a7c2c95964c8efd687e95e632fc533d6"
+is_validator: false
+## The flag to enable EIP-1559
+enable_eip_1559: true
 
-# This is the configuration related to mounting a separate device
+### Disk Flags ###
+## This is the configuration related to mounting a separate device
 storage_device_name: nvme1n1
 storage_device_location: /dev/{{ storage_device_name }}
 storage_mount_point: "{{ edge_home_dir }}"
 storage_partition_name: State Data
 
+### Local Geth Flags ###
 geth_http_port: 8545
 geth_miner_mnemonic: code code code code code code code code code code code quality
 geth_chain_id: 1001
