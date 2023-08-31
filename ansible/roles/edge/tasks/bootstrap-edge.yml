@@ -6,9 +6,15 @@
     dest: "{{ edge_home_dir }}/init.sh"
     mode: 0700
 
+- name: Produce rootchain-wallet.json
+  ansible.builtin.template:
+    src: rootchain-wallet.json
+    dest: "{{ edge_home_dir }}/rootchain-wallet.json"
+    mode: 0700
+
 - name: Execute bootstrap on the first validator
   ansible.builtin.shell: |
-    {{ edge_home_dir }}/init.sh 2>&1 > {{ edge_home_dir }}/bootstrap_output.txt
+    {{ edge_home_dir }}/init.sh &> {{ edge_home_dir }}/bootstrap_output.txt
   when: hostvars[inventory_hostname].tags["Hostname"] == "validator-001"
   args:
     executable: /bin/bash
