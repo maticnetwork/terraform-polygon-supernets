@@ -2,8 +2,8 @@
 clean_deploy_title: devnet13
 
 #### Genesis Flags ###
-block_gas_limit: 50_000_000
-block_time: 5
+block_gas_limit: 120_000_000
+block_time: 2
 chain_id: 100
 
 ### Version Flags ###
