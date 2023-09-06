@@ -10,7 +10,7 @@ chain_id: 100
 polycli_tag: 0.1.30 # https://github.com/maticnetwork/polygon-cli/releases
 edge_tag: 761bc2231156ffa1445eb85cbdefec1a87544f65 # this commit has improved logging from v1.1.0
 geth_tag: v1.12.0
-go_tag: 1.19.10.linux-amd64
+go_tag: 1.20.7.linux-amd64
 
 ### FUNDING ACCOUNTS ###
 ## this is the amount of value that will be transfered on the rootchain to the deployer address and the validators
