@@ -9,7 +9,6 @@ variable "base_instance_type" {
 variable "base_ami" {
   description = "Value of the base AMI that we're using"
   type        = string
-  default     = "ami-0ecc74eca1d66d8a6"
 }
 variable "fullnode_count" {
   description = "The number of full nodes that we're going to deploy"

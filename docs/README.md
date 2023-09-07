@@ -69,7 +69,7 @@ cd terraform-polygon-supernets
 ```
 $ export AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
 $ export AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
-$ export AWS_DEFAULT_REGION=us-west-2
+$ export AWS_DEFAULT_REGION=eu-west-1
 ```
 
 Note: Ensure that the AWS user role has the necessary permissions to create all
@@ -153,7 +153,7 @@ ansible-galaxy install -r requirements.yml
 
 ```
 regions:
-  - us-west-2
+  - eu-west-1
 ###
 filters:
   tag:BaseDN: "<YOUR_DEPLOYMENT_NAME>.edge.<YOUR_COMPANY>.private"
@@ -222,7 +222,7 @@ be able to send transactions. The command below uses
 
 ```
 cast send --legacy \
-    --rpc-url http://ext-rpc-devnet13-edge-10623089.us-west-2.elb.amazonaws.com \
+    --rpc-url http://ext-rpc-devnet13-edge-10623089.eu-west-1.elb.amazonaws.com \
     --value 1 \
     --private-key 0x42b6e34dc21598a807dc19d7784c71b2a7a01f6480dc6f58258f78e539f1a1fa \
     0x9f34dCBECFC0BD4c1ee3d12e1Fb5DCF1A0b9BCcB
@@ -236,7 +236,7 @@ is the default load test address of `polycli`:
 
 ```
 polycli loadtest --chain-id 1 --mode t --requests 10 \
-    --verbosity 601 http://ext-rpc-devnet13-edge-10623089.us-west-2.elb.amazonaws.com
+    --verbosity 601 http://ext-rpc-devnet13-edge-10623089.eu-west-1.elb.amazonaws.com
 ```
 
 ## Destroy Procedure 💥
