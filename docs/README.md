@@ -1,4 +1,4 @@
-This repository contains Terraform automation for deploying Polygon
+This repository contains Terraform automation for deploying a production like environment for testing Polygon
 Supernet infrastructure on AWS.
 
 # Polygon Supernets AWS Deployment using Terraform / Ansible
