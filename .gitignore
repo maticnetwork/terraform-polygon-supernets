@@ -2,3 +2,6 @@
 private.env
 *.key
 *.pem
+*.terraform
+*.terraform.*
+terraform.tfstate

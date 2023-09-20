@@ -1,6 +1,8 @@
 This repository contains Terraform automation for deploying Polygon
 Supernet infrastructure on AWS.
 
+Please Note: This does not deploy a production like environment.
+
 # Polygon Supernets AWS Deployment using Terraform / Ansible
 
 Polygon Supernets is Polygon's solution to build and power dedicated
