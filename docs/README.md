@@ -1,5 +1,7 @@
-This repository contains Terraform automation for deploying Polygon
-Supernet infrastructure on AWS.
+This repository contains Terraform automation for testing a deployment of Polygon Supernet infrastructure on AWS.
+
+> [!IMPORTANT]
+> Do not use the Automation as-is for production deployments. Please follow HA best practices and the [hardware configuration requirements](https://wiki.polygon.technology/docs/supernets/operate/supernets-requirements/)
 
 # Polygon Supernets AWS Deployment using Terraform / Ansible
 
