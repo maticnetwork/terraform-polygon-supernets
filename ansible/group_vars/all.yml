@@ -7,10 +7,10 @@ block_time: 5
 chain_id: 100
 
 ### Version Flags ###
-polycli_tag: 0.1.30 # https://github.com/maticnetwork/polygon-cli/releases
-edge_tag: 761bc2231156ffa1445eb85cbdefec1a87544f65 # this commit has improved logging from v1.1.0
+polycli_tag: 0.1.31 # https://github.com/maticnetwork/polygon-cli/releases
+edge_tag: v1.3.0
 geth_tag: v1.12.0
-go_tag: 1.20.7.linux-amd64
+go_tag: 1.20.8.linux-amd64
 
 ### FUNDING ACCOUNTS ###
 ## this is the amount of value that will be transfered on the rootchain to the deployer address and the validators
@@ -83,8 +83,8 @@ edge_home_dir: /var/lib/edge
 edge_user: edge
 loadtest_account: "0x85da99c8a7c2c95964c8efd687e95e632fc533d6"
 is_validator: false
-## The flag to enable EIP-1559
 enable_eip_1559: true
+use_proxy_admin: true
 
 ### Disk Flags ###
 ## This is the configuration related to mounting a separate device

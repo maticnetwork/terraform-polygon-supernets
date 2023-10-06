@@ -57,6 +57,9 @@ main() {
                  --burn-contract 0:$BURN_CONTRACT_ADDRESS \
 {% endif %}
                  --reward-wallet 0x0101010101010101010101010101010101010101:1000000000000000000000000000 \
+{% if (use_proxy_admin) %}
+                 --proxy-contracts-admin $(cat rootchain-wallet.json | jq -r '.ETHAddress') \
+{% endif %}
                  --block-gas-limit {{ block_gas_limit }} \
                  --block-time {{ block_time }}s \
                  {% for item in hostvars %}{% if (hostvars[item].tags.Role == "validator") %} --validators /dns4/{{ hostvars[item].tags["Name"] }}/tcp/{{ edge_p2p_port }}/p2p/$(cat {{ hostvars[item].tags["Name"] }}.json | jq -r '.[0].node_id'):$(cat {{ hostvars[item].tags["Name"] }}.json | jq -r '.[0].address' | sed 's/^0x//'):$(cat {{ hostvars[item].tags["Name"] }}.json | jq -r '.[0].bls_pubkey') {% endif %}{% endfor %} \
@@ -66,6 +69,9 @@ main() {
     polygon-edge polybft stake-manager-deploy \
         --jsonrpc {{ rootchain_json_rpc }} \
         --private-key $(cat rootchain-wallet.json | jq -r '.HexPrivateKey') \
+{% if (use_proxy_admin) %}
+        --proxy-contracts-admin $(cat rootchain-wallet.json | jq -r '.ETHAddress') \
+{% endif %}
 {% if (is_deploy_stake_token_erc20) %}
         --stake-token $(cat MockStakeTokenERC20.json | jq -r '.contractAddress')
 {% else %}
@@ -76,6 +82,9 @@ main() {
                  --stake-manager $(cat genesis.json | jq -r '.params.engine.polybft.bridge.stakeManagerAddr') \
                  --stake-token $(cat genesis.json | jq -r '.params.engine.polybft.bridge.stakeTokenAddr') \
                  --json-rpc {{ rootchain_json_rpc }} \
+{% if (use_proxy_admin) %}
+                 --proxy-contracts-admin $(cat rootchain-wallet.json | jq -r '.ETHAddress') \
+{% endif %}
                  --deployer-key $(cat rootchain-wallet.json | jq -r '.HexPrivateKey')
 
 {% for item in hostvars %}
