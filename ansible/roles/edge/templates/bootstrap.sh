@@ -34,6 +34,10 @@ main() {
     {% if (fund_rootchain_coinbase) %}# {% endif %}cast send --rpc-url {{ rootchain_json_rpc }} --from {{ rootchain_coinbase_address }} --value {{ rootchain_deployer_fund_amount }} $(cat rootchain-wallet.json | jq -r '.ETHAddress') --private-key {{ rootchain_coinbase_private_key }}
     # {% if (fund_rootchain_coinbase) %}# {% endif %}mv ../edge/rootchain-wallet.json ./rootchain-wallet.json
 
+{% if (use_proxy_admin) %}
+    polycli wallet create --words 12 --language english | jq '.Addresses[0]' > proxy-admin-wallet.json
+{% endif %}
+
 {% if (is_deploy_stake_token_erc20) %}
     echo "Deploying MockERC20 (Stake Token) contract"
     cast send --from $(cat rootchain-wallet.json | jq -r '.ETHAddress') \
@@ -58,7 +62,7 @@ main() {
 {% endif %}
                  --reward-wallet 0x0101010101010101010101010101010101010101:1000000000000000000000000000 \
 {% if (use_proxy_admin) %}
-                 --proxy-contracts-admin $(cat rootchain-wallet.json | jq -r '.ETHAddress') \
+                 --proxy-contracts-admin $(cat proxy-admin-wallet.json | jq -r '.ETHAddress') \
 {% endif %}
                  --block-gas-limit {{ block_gas_limit }} \
                  --block-time {{ block_time }}s \
@@ -70,7 +74,7 @@ main() {
         --jsonrpc {{ rootchain_json_rpc }} \
         --private-key $(cat rootchain-wallet.json | jq -r '.HexPrivateKey') \
 {% if (use_proxy_admin) %}
-        --proxy-contracts-admin $(cat rootchain-wallet.json | jq -r '.ETHAddress') \
+        --proxy-contracts-admin $(cat proxy-admin-wallet.json | jq -r '.ETHAddress') \
 {% endif %}
 {% if (is_deploy_stake_token_erc20) %}
         --stake-token $(cat MockStakeTokenERC20.json | jq -r '.contractAddress')
@@ -83,7 +87,7 @@ main() {
                  --stake-token $(cat genesis.json | jq -r '.params.engine.polybft.bridge.stakeTokenAddr') \
                  --json-rpc {{ rootchain_json_rpc }} \
 {% if (use_proxy_admin) %}
-                 --proxy-contracts-admin $(cat rootchain-wallet.json | jq -r '.ETHAddress') \
+                 --proxy-contracts-admin $(cat proxy-admin-wallet.json | jq -r '.ETHAddress') \
 {% endif %}
                  --deployer-key $(cat rootchain-wallet.json | jq -r '.HexPrivateKey')
 
