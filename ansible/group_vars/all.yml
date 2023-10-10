@@ -84,7 +84,6 @@ edge_user: edge
 loadtest_account: "0x85da99c8a7c2c95964c8efd687e95e632fc533d6"
 is_validator: false
 enable_eip_1559: true
-use_proxy_admin: true
 
 ### Disk Flags ###
 ## This is the configuration related to mounting a separate device
