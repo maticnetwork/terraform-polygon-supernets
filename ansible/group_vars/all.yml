@@ -82,7 +82,6 @@ haproxy_port: 10222
 edge_home_dir: /var/lib/edge
 edge_user: edge
 loadtest_account: "0x85da99c8a7c2c95964c8efd687e95e632fc533d6"
-is_validator: false
 ## The flag to enable EIP-1559
 enable_eip_1559: true
 
