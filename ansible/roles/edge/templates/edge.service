@@ -22,9 +22,6 @@ ExecStart=polygon-edge server --data-dir {{ edge_home_dir }} \
     {% if (hostvars[inventory_hostname].tags.Hostname == "validator-001") %}
     --relayer \
     {% endif %}
-    {% if is_validator %}
-    --seal
-    {% endif %}
 
 MemoryHigh={{ (ansible_memtotal_mb * 0.7) | round | int }}M
 MemoryMax={{ (ansible_memtotal_mb * 0.8) | round | int }}M
