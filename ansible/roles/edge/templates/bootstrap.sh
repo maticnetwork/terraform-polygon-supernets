@@ -144,7 +144,6 @@ main() {
     polygon-edge polybft supernet \
                  --private-key $(cat rootchain-wallet.json | jq -r '.HexPrivateKey') \
                  --supernet-manager $(cat genesis.json | jq -r '.params.engine.polybft.bridge.customSupernetManagerAddr') \
-                 --stake-manager $(cat genesis.json | jq -r '.params.engine.polybft.bridge.stakeManagerAddr') \
                  --finalize-genesis-set \
                  --enable-staking \
                  --jsonrpc {{ rootchain_json_rpc }}
