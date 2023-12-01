@@ -62,7 +62,7 @@ resource "aws_network_interface_sg_attachment" "open_rpc" {
 }
 resource "aws_security_group" "open_http" {
   name        = "external-explorer-access"
-  description = "Allowing explorer acccess"
+  description = "Allowing explorer access"
   vpc_id      = var.devnet_id
 }
 resource "aws_security_group_rule" "open_http" {

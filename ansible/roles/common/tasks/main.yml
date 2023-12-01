@@ -12,13 +12,13 @@
         mode: 0755
         force: false
       when: not deployment_id_file.stat.exists
-    - name: "Check wether /etc/polygon-deployment-id contains {{ deployment_name }}"
+    - name: "Check whether /etc/polygon-deployment-id contains {{ deployment_name }}"
       ansible.builtin.command: grep -Fxq "{{ deployment_name }}" /etc/polygon-deployment-id
       register: checkdeployment
       check_mode: false
       ignore_errors: true
       changed_when: false
-    - name: "Check wether /etc/polygon-deployment-id contains {{ deployment_name }}"
+    - name: "Check whether /etc/polygon-deployment-id contains {{ deployment_name }}"
       ansible.builtin.assert:
         that:
           - checkdeployment.rc == 0
