@@ -2,3 +2,6 @@
 private.env
 *.key
 *.pem
+output.txt
+/.terraform
+.terraform.lock.hcl

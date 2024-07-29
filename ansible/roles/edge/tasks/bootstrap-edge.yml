@@ -6,12 +6,6 @@
     dest: "{{ edge_home_dir }}/init.sh"
     mode: 0700
 
-- name: Produce rootchain-wallet.json
-  ansible.builtin.template:
-    src: rootchain-wallet.json
-    dest: "{{ edge_home_dir }}/rootchain-wallet.json"
-    mode: 0700
-
 - name: Execute bootstrap on the first validator
   ansible.builtin.shell: |
     {{ edge_home_dir }}/init.sh &> {{ edge_home_dir }}/bootstrap_output.txt

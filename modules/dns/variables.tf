@@ -6,7 +6,7 @@ variable "base_dn" {
 variable "region" {
   description = "The region where we want to deploy"
   type        = string
-  default     = "eu-west-1"
+  default     = "us-east-1"
 }
 
 variable "deployment_name" {

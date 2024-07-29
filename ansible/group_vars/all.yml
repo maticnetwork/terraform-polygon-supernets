@@ -4,7 +4,7 @@ clean_deploy_title: devnet13
 #### Genesis Flags ###
 block_gas_limit: 50_000_000
 block_time: 5
-chain_id: 100
+chain_id: 88989
 
 ### Version Flags ###
 polycli_tag: 0.1.30 # https://github.com/maticnetwork/polygon-cli/releases
@@ -14,10 +14,10 @@ go_tag: 1.20.7.linux-amd64
 
 ### FUNDING ACCOUNTS ###
 ## this is the amount of value that will be transfered on the rootchain to the deployer address and the validators
-rootchain_stake_token_fund_amount: 1000ether
-rootchain_deployer_fund_amount: 10000000ether
-rootchain_validator_fund_amount: 100ether
-rootchain_validator_convert_amount_ether: 100
+rootchain_stake_token_fund_amount: 1ether
+rootchain_deployer_fund_amount: 6ether
+rootchain_validator_fund_amount: 1ether
+rootchain_validator_convert_amount_ether: 0.1
 ## smaller values for rootchain (testnets)
 # rootchain_stake_token_fund_amount: 10ether
 # rootchain_deployer_fund_amount: 10ether
@@ -26,7 +26,7 @@ rootchain_validator_convert_amount_ether: 100
 
 ### ROOTCHAIN ###
 ## this is the rpc url that will be used for the root chain
-rootchain_json_rpc: http://geth-001:8545
+rootchain_json_rpc: http://10.10.67.79:8545
 # rootchain_json_rpc: https://polygon-mumbai.g.alchemy.com/v2/xxx
 # rootchain_json_rpc: https://matic-mumbai.chainstacklabs.com
 
@@ -39,21 +39,21 @@ fund_rootchain_coinbase: true
 
 ## If the L1 is NOT an unlocked test account, then you'll need some wallet
 # for funding validators. The address and private key here are used for this purpose
-rootchain_coinbase_address: "0xREPLACE_WITH_ETH_ADDRESS"
-rootchain_coinbase_private_key: "REPLACE_WITH_PRIVATE_KEY"
+rootchain_coinbase_address: "0xA8A4f31fF1445dA283aC3624430c954A13D4675d"
+rootchain_coinbase_private_key: "5bb82c5bd87bdef1c1262ea18f51eb60a99af46519b477c09e933b72995f8b74"
 ### ROOTCHAIN ###
 
 ### STAKE TOKEN ###
 # enter "stake_token_address" if you are using a pre-existing rootchain, and already have deployed a stake token contract
 # "stake_token_address" is only read when "is_deploy_stake_token_erc20: true"
-stake_token_address: "0x5d732A66f1F2FB8A7A284AF5B35e043D1f0B0985"
+stake_token_address: "0xd9b2df73f87719f986fbbe4b956c1331d84389e9"
 is_stake_token_erc_20: true
 is_deploy_stake_token_erc20: true
 
 ### NATIVE TOKEN ###
 ## mintable=false: non child-chain mintable native token: Supernets native token is configured to be the child token of already existing token on the rootchain, meaning that its supply originates from bridging the rootchain token
 ## mintable=true: child chain mintable native token: its supply is managed straight on the Supernets, without bridging some existing rootchain token
-native_token_config: MyToken:MTK:18:true # configuration of native token in format <name:symbol:decimals count:mintable flag>
+native_token_config: OthStakeToken:OTSTK:18:true # configuration of native token in format <name:symbol:decimals count:mintable flag>
 
 ### Infra/Ansible Flags ###
 ansible_ssh_private_key_file: ~/devnet_private.key
@@ -97,3 +97,17 @@ geth_http_port: 8545
 geth_miner_mnemonic: code code code code code code code code code code code quality
 geth_chain_id: 1001
 geth_p2p_port: 30303
+
+### GETH vars ###
+execution_client: "geth"
+network: "holesky"
+ethereum_dir: "/usr/local/bin"
+consensus_dir: "{{ ethereum_dir }}/consensus"
+execution_dir: "{{ ethereum_dir }}/execution"
+jwt_path: "{{ execution_dir }}/jwtsecret"
+prysm_url: "https://raw.githubusercontent.com/prysmaticlabs/prysm/master/prysm.sh"
+geth_latest_release_url: "https://api.github.com/repos/ethereum/go-ethereum/releases/latest"
+geth_commit_url: "https://api.github.com/repos/ethereum/go-ethereum/git/refs/tags"
+geth_store_base_url: "https://gethstore.blob.core.windows.net/builds"
+checkpoint_sync_url: "https://holesky.beaconstate.info"
+genesis_beacon_api_url: "https://holesky.beaconstate.info"

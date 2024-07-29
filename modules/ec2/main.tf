@@ -50,7 +50,7 @@ resource "aws_instance" "validator" {
 
   root_block_device {
     delete_on_termination = true
-    volume_size           = 30
+    volume_size           = 50
     volume_type           = "gp2"
   }
 
@@ -75,7 +75,7 @@ resource "aws_instance" "fullnode" {
 
   root_block_device {
     delete_on_termination = true
-    volume_size           = 30
+    volume_size           = 50
     volume_type           = "gp2"
   }
   network_interface {
@@ -92,14 +92,14 @@ resource "aws_instance" "fullnode" {
 
 resource "aws_instance" "geth" {
   ami                  = var.base_ami
-  instance_type        = var.base_instance_type
+  instance_type        = "t3.2xlarge"
   count                = var.geth_count
   key_name             = aws_key_pair.devnet.key_name
   iam_instance_profile = var.ec2_profile_name
 
   root_block_device {
     delete_on_termination = true
-    volume_size           = 30
+    volume_size           = 500
     volume_type           = "gp2"
   }
 

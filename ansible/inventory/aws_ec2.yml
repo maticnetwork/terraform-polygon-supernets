@@ -2,7 +2,7 @@
 plugin: amazon.aws.aws_ec2
 
 regions:
-  - eu-west-1
+  - us-east-1
 
 keyed_groups:
   - key: tags.Role
@@ -19,7 +19,7 @@ leading_separator: "no"
 cache: "yes"
 
 filters:
-  tag:BaseDN: "devnet13.edge.company.private"
+  tag:BaseDN: "devnet13.edge.othentic.private"
 
 hostnames:
   - instance-id

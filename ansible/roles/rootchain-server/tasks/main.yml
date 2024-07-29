@@ -1,130 +1,165 @@
 ---
-- name: Create the geth group
-  ansible.builtin.group:
-    name: geth-group
+- name: Create directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+  loop:
+    - "{{ consensus_dir }}"
+    - "{{ execution_dir }}"
+
+- name: Generate JWT Secret file
+  command: openssl rand -hex 32
+  register: jwt_secret
+
+- name: Copy JWT Secret to file
+  copy:
+    content: "{{ jwt_secret.stdout }}"
+    dest: "{{ jwt_path }}"
+    mode: '0600'
+
+- name: Install Prysm
+  get_url:
+    url: "{{ prysm_url }}"
+    dest: "{{ consensus_dir }}/prysm.sh"
+    mode: '0755'
+
+- name: Fetch the latest Geth release data
+  uri:
+    url: "{{ geth_latest_release_url }}"
+    return_content: yes
+  register: geth_release
+
+- name: Parse Geth tag name
+  set_fact:
+    tag_name: "{{ geth_release.json.tag_name }}"
+
+- name: Fetch commit hash for tag
+  uri:
+    url: "{{ geth_commit_url }}/{{ tag_name }}"
+    return_content: yes
+  register: commit_data
+
+- name: Parse commit hash
+  set_fact:
+    commit_hash: "{{ commit_data.json.object.sha }}"
+
+- name: Remove 'v' prefix from version number
+  set_fact:
+    version_number: "{{ tag_name[1:] }}"
+
+- name: Extract the first 8 characters of commit hash
+  set_fact:
+    short_commit_hash: "{{ commit_hash[:8] }}"
+
+- name: Construct download URL
+  set_fact:
+    latest_url: "{{ geth_store_base_url }}/geth-linux-amd64-{{ version_number }}-{{ short_commit_hash }}.tar.gz"
+
+- name: Download Geth tarball
+  get_url:
+    url: "{{ latest_url }}"
+    dest: "{{ execution_dir }}/geth.tar.gz"
+
+- name: Extract Geth tarball
+  unarchive:
+    src: "{{ execution_dir }}/geth.tar.gz"
+    dest: "{{ execution_dir }}"
+    remote_src: yes
+
+- name: Find Geth directory
+  shell: "tar -tf {{ execution_dir }}/geth.tar.gz | grep -Eo '^[^/]+' | uniq"
+  register: geth_dir
+  changed_when: false
+
+- name: Debug Geth directory name
+  debug:
+    msg: "Geth directory name: '{{ geth_dir.stdout }}'"
+
+- name: Ensure Node.js and npm are installed
+  apt:
+    name: 
+      - nodejs
+      - npm
     state: present
+  become: yes
 
-- name: Add the geth user to the geth group
-  ansible.builtin.user:
-    name: geth
-    groups: geth-group
-    comment: geth Application user
+- name: Install pm2 globally
+  npm:
+    name: pm2
+    global: yes
+  become: yes
 
-- name: Create the geth config directory
-  ansible.builtin.file:
-    path: /etc/geth
-    state: directory
-    owner: geth
-    group: geth-group
-    recurse: true
-    mode: 0750
-
-- name: Create the state directory
-  ansible.builtin.file:
-    path: /var/lib/geth
-    state: directory
-    owner: geth
-    group: geth-group
-    recurse: true
-    mode: 0750
-
-- name: Install go
-  ansible.builtin.include_tasks: go.yml
-
-- name: Clone geth repo
-  ansible.builtin.git:
-    repo: https://github.com/ethereum/go-ethereum
-    dest: /opt/go-ethereum
-    version: "{{ geth_tag }}"
-    force: true
-
-- name: Build geth
-  ansible.builtin.shell: |
-    pushd /opt/go-ethereum
-    make all
-    popd
-  args:
-    executable: /bin/bash
-    creates: /opt/go-ethereum/build/bin/geth
-
-- name: Copy geth to bin dir
-  ansible.builtin.copy:
-    src: /opt/go-ethereum/build/bin/geth
-    dest: /usr/local/bin/geth
-    remote_src: true
-    mode: 0755
-
-- name: Create the clique genesis
-  ansible.builtin.template:
-    src: genesis.json
-    dest: /etc/geth/genesis.json
-    mode: "0640"
-
-- name: Setup geth
-  ansible.builtin.shell: |
-    polycli nodekey --ip $(hostname -I | head -n 1) > /etc/geth/nodekey.json
-    hostname | awk -F. '{print $1}' | sed 's/.*-0*//' > /etc/geth/host.index
-    polycli wallet inspect --addresses 20 --mnemonic "{{ geth_miner_mnemonic }}" | jq -r '.Addresses['$(cat /etc/geth/host.index)'-1]' > /etc/geth/polykey.json
-    cat /etc/geth/polykey.json | jq -r '.HexPrivateKey' | tr -d "\n" > /etc/geth/privkey
-    head -c 32 < /dev/urandom | polycli hash keccak256 | tr -d "\n" > /etc/geth/password
-    geth init --datadir /var/lib/geth /etc/geth/genesis.json
-    geth account import --password /etc/geth/password --keystore /var/lib/geth/keystore /etc/geth/privkey
-    cat /etc/geth/nodekey.json  | jq -r '.PrivateKey' | tr -d "\n" > /var/lib/geth/geth/nodekey
-    chown -R geth:geth-group /etc/geth
-    chown -R geth:geth-group /var/lib/geth
-  args:
-    executable: /bin/bash
-    creates: /var/lib/geth/keystore
-
-- name: Get ETH Address
-  ansible.builtin.shell: cat /etc/geth/polykey.json  | jq -r ".ETHAddress" | tr -d "\n"
-  register: derived_wallet_address
+- name: Check for running PM2 services
+  shell: pm2 list --silent --no-color | grep -i 'online'
+  register: pm2_services_running
+  failed_when: false
   changed_when: false
 
-- name: Display eth address
-  ansible.builtin.debug:
-    msg: "{{ derived_wallet_address.stdout }}"
+- name: Stop all running PM2 services
+  shell: pm2 stop all
+  when: pm2_services_running.stdout != ''
+  become: yes
 
-- name: Get ENR
-  ansible.builtin.shell: cat /etc/geth/nodekey.json | jq -r '.ENR' | tr -d "\n"
-  register: root_enrs
+- name: Delete all PM2 services
+  shell: pm2 delete all
+  when: pm2_services_running.stdout != ''
+  become: yes
+
+- name: Run Geth with pm2 as root
+  become: yes
+  shell: |
+    pm2 start --name geth "{{ execution_dir }}/{{ geth_dir.stdout | trim }}/geth" -- --{{ network }} --http --http.api eth,net,engine,admin --authrpc.jwtsecret={{ jwt_path }} --http.addr 0.0.0.0 > {{ execution_dir }}/geth_output.log 2>&1
+
+- name: Run Beacon Node with pm2 as root
+  become: yes
+  shell: |
+    pm2 start --name beacon-node "{{ consensus_dir }}/prysm.sh" -- beacon-chain --accept-terms-of-use --execution-endpoint=http://localhost:8551 --{{ network }} --jwt-secret={{ jwt_path }} --checkpoint-sync-url={{ checkpoint_sync_url }} --genesis-beacon-api-url={{ genesis_beacon_api_url }} > {{ consensus_dir }}/beacon_node_output.log 2>&1
+
+
+- name: Register pm2 as systemd service to ensure geth start on reboot
+  become: yes
+  shell: |
+    pm2 startup systemd
+    pm2 save
+
+- name: Verify pm2 service is enabled
+  command: systemctl is-enabled pm2-root
+  register: pm2_service_status
   changed_when: false
 
-- name: Display ENRS
-  ansible.builtin.set_fact:
-    rootchain_bootnodes: "{{ ansible_play_hosts | map('extract', hostvars, 'root_enrs') | map(attribute='stdout') | list }}"
-  run_once: true
+- name: Display pm2 service status
+  debug:
+    msg: "PM2 service is enabled: {{ pm2_service_status.stdout }}"
 
-- name: Create the geth toml
-  ansible.builtin.template:
-    src: config.toml
-    dest: /etc/geth/config.toml
-    mode: "0644"
+- name: Display running services
+  debug:
+    msg: "Geth and Beacon Node are running with pm2."
 
-- name: Create the geth systemd file
-  ansible.builtin.template:
-    src: geth.service
-    dest: /etc/systemd/system/geth.service
-    mode: 0644
+- name: List active pm2 processes
+  become: yes
+  shell: pm2 list
+  register: pm2_process_list
+  ignore_errors: yes
 
-# something is wonky here with the peering. Ideally these could be spaced out in some way?
-- name: Restart Geth Service to do initialization
-  throttle: 1
-  ansible.builtin.systemd:
-    state: restarted
-    name: geth
-    enabled: true
-    daemon_reload: true
+- name: Debug pm2 list output
+  debug:
+    var: pm2_process_list.stdout_lines
 
-- name: Pause while geth starts
-  ansible.builtin.pause:
-    seconds: 5
+- name: Wait for geth to sync with holesky
+  uri:
+    url: "http://localhost:8545"
+    method: POST
+    body: '{"jsonrpc":"2.0","method":"eth_syncing","params":[],"id":1}'
+    body_format: json
+    headers:
+      Content-Type: "application/json"
+  register: sync_status
+  until: sync_status.json.result is sameas false
+  retries: 240 # Wait 4 hours
+  delay: 60 # Delay between retries (in seconds)
+  ignore_errors: yes
 
-- name: Restart Geth Service to actually run
-  throttle: 1
-  ansible.builtin.systemd:
-    state: restarted
-    name: geth
-    enabled: true
-    daemon_reload: true
-
+- name: Continue with other tasks
+  debug:
+    msg: "Geth node is fully synced. Continuing with other tasks."
